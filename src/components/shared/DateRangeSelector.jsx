@@ -14,7 +14,7 @@ const PRESETS = [
 
 export default function DateRangeSelector({ startDate, endDate, onStartChange, onEndChange, activePreset, onPresetChange }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-2">
+    <div className="flex flex-col md:flex-row md:items-center gap-2 w-full md:w-auto">
       <div className="flex flex-wrap gap-1 p-1 bg-muted rounded-lg">
         {PRESETS.map(p => (
           <Button

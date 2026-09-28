@@ -132,7 +132,7 @@ export default function AnaliseEstatistica() {
           <h1 className="text-xl font-bold">Análise Estatística</h1>
           <p className="text-xs text-muted-foreground">Estatísticas calculadas sobre dados reais do período</p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center md:justify-end gap-2">
           <DateRangeSelector
             startDate={startDate} endDate={endDate}
             onStartChange={setStartDate} onEndChange={setEndDate}
