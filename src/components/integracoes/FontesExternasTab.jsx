@@ -20,6 +20,7 @@ function GlassCard({ children, className = "" }) {
 
 const FONTE_COLORS = {
   openweather: "bg-blue-500/15 text-blue-600 border-blue-500/20",
+  openmeteo: "bg-emerald-500/15 text-emerald-600 border-emerald-500/20",
   inmet: "bg-emerald-500/15 text-emerald-600 border-emerald-500/20",
   manual: "bg-violet-500/15 text-violet-600 border-violet-500/20",
 };
@@ -64,27 +65,28 @@ export default function FontesExternasTab() {
     };
   };
 
-  const fetchINMET = async (estacao) => {
-    // INMET Open API — busca estação mais próxima e leitura mais recente
-    const hoje = moment().format("YYYY-MM-DD");
-    const url = `https://apitempo.inmet.gov.br/estacao/${hoje}/${hoje}/${estacao.latitude}/${estacao.longitude}`;
+  const fetchOpenMeteo = async (estacao) => {
+    // Open-Meteo — pública e gratuita, sem chave. Condições atuais pela coordenada.
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${estacao.latitude}&longitude=${estacao.longitude}` +
+      `&current=temperature_2m,relative_humidity_2m,surface_pressure&timezone=America/Sao_Paulo`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`INMET API: ${res.status}`);
+    if (!res.ok) throw new Error(`Open-Meteo: ${res.status}`);
     const data = await res.json();
-    const last = Array.isArray(data) ? data[data.length - 1] : data;
+    const cur = data.current;
+    if (!cur) throw new Error("Sem dados atuais do Open-Meteo agora");
     return {
-      fonte: "inmet",
+      fonte: "openmeteo",
       estacao_referencia_id: estacao.id,
       estacao_referencia_nome: estacao.nome,
-      nome_estacao_externa: last?.DC_NOME || "INMET",
+      nome_estacao_externa: "Open-Meteo (modelo meteorológico)",
       latitude: estacao.latitude,
       longitude: estacao.longitude,
       timestamp: new Date().toISOString(),
-      temperatura_c: parseFloat(last?.TEM_INS) || null,
-      umidade_relativa_perc: parseFloat(last?.UMD_INS) || null,
-      pressao_atmosferica_hpa: parseFloat(last?.PRE_INS) || null,
-      indice_uv: parseFloat(last?.RAD_GLO) || null,
-      raw_response: JSON.stringify(last),
+      temperatura_c: cur.temperature_2m ?? null,
+      umidade_relativa_perc: cur.relative_humidity_2m ?? null,
+      pressao_atmosferica_hpa: cur.surface_pressure ?? null,
+      indice_uv: null,
+      raw_response: JSON.stringify(cur),
     };
   };
 
@@ -99,7 +101,7 @@ export default function FontesExternasTab() {
     try {
       let payload;
       if (fonte === "openweather") payload = await fetchOpenWeather(estacao);
-      else payload = await fetchINMET(estacao);
+      else payload = await fetchOpenMeteo(estacao);
       await base44.entities.DadosExternos.create(payload);
       qc.invalidateQueries({ queryKey: ["dados-externos"] });
       toast({ title: "Dados importados com sucesso!" });
@@ -135,7 +137,7 @@ export default function FontesExternasTab() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="openweather">OpenWeatherMap</SelectItem>
-                <SelectItem value="inmet">INMET (Open API)</SelectItem>
+                <SelectItem value="openmeteo">Open-Meteo (gratuita, sem chave)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -165,12 +167,12 @@ export default function FontesExternasTab() {
           </div>
         )}
 
-        {fonte === "inmet" && (
+        {fonte === "openmeteo" && (
           <div className="flex items-start gap-2 p-3 rounded-xl bg-emerald-500/5 border border-emerald-200 mb-4">
             <Info className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
             <p className="text-xs text-emerald-700">
-              A API do INMET é pública e gratuita. Os dados são buscados pela coordenada geográfica da estação selecionada.
-              Disponibilidade depende de estações INMET próximas.
+              A Open-Meteo é pública e gratuita, sem chave de API. Os dados são do modelo meteorológico global,
+              buscados pela coordenada geográfica da estação selecionada e atualizados a cada 15 minutos.
             </p>
           </div>
         )}
