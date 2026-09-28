@@ -57,11 +57,25 @@ export default function MapaEstacoes() {
 
   const deleteStation = useMutation({
     mutationFn: (id) => base44.entities.Estacoes.delete(id),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["estacoes"] });
+      const previous = queryClient.getQueryData(["estacoes"]);
+      queryClient.setQueryData(["estacoes"], (old) => (old || []).filter(e => e.id !== id));
+      return { previous };
+    },
+    onError: (_err, _id, context) => queryClient.setQueryData(["estacoes"], context?.previous),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["estacoes"] }),
   });
 
   const updateStation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Estacoes.update(id, data),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ["estacoes"] });
+      const previous = queryClient.getQueryData(["estacoes"]);
+      queryClient.setQueryData(["estacoes"], (old) => (old || []).map(e => e.id === id ? { ...e, ...data } : e));
+      return { previous };
+    },
+    onError: (_err, _vars, context) => queryClient.setQueryData(["estacoes"], context?.previous),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["estacoes"] });
       setEditDialogOpen(false);
@@ -188,11 +202,11 @@ export default function MapaEstacoes() {
                 </div>
                 <div className="flex items-center gap-2">
                   {status === "online" ? <Wifi className="w-3 h-3 text-emerald-500" /> : <WifiOff className="w-3 h-3 text-red-500" />}
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(est)}>
-                    <Pencil className="w-3 h-3 text-muted-foreground" />
+                  <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => openEdit(est)}>
+                    <Pencil className="w-4 h-4 text-muted-foreground" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteStation.mutate(est.id)}>
-                    <Trash2 className="w-3 h-3 text-muted-foreground" />
+                  <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => deleteStation.mutate(est.id)}>
+                    <Trash2 className="w-4 h-4 text-muted-foreground" />
                   </Button>
                 </div>
               </div>

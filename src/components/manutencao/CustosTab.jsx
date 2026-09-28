@@ -198,8 +198,8 @@ export default function CustosTab() {
                   <TableCell className="text-sm">{c.fornecedor || "—"}</TableCell>
                   <TableCell className="text-sm font-bold">R$ {(c.valor || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => remove.mutate(c.id)}>
-                      <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
+                    <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => remove.mutate(c.id)}>
+                      <Trash2 className="w-4 h-4 text-muted-foreground" />
                     </Button>
                   </TableCell>
                 </TableRow>

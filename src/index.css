@@ -88,6 +88,22 @@
   }
   body {
     @apply bg-background text-foreground font-inter;
+    overscroll-behavior-y: none;
+  }
+
+  /* Compatibilidade WebView mobile (iOS/Android) */
+  .overflow-y-auto,
+  .overflow-auto,
+  .overflow-x-auto {
+    overscroll-behavior-y: contain;
+  }
+  button,
+  a,
+  [role="button"],
+  [role="tab"],
+  .lucide {
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   /* Transição suave das cores durante a troca de tema claro/escuro */

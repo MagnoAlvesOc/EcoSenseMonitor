@@ -3,7 +3,7 @@ import EnvMetricCard from "./EnvMetricCard";
 
 export default function SidePanel({ cards, onlineLoading }) {
   return (
-    <div className="fixed inset-x-2 bottom-14 z-30 pointer-events-auto md:inset-x-auto md:top-12 md:right-3 md:bottom-16 md:w-[224px]">
+    <div className="fixed inset-x-2 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-30 pointer-events-auto md:inset-x-auto md:top-12 md:right-3 md:bottom-16 md:w-[224px]">
       <div className="bg-card/80 backdrop-blur-2xl border border-border rounded-2xl shadow-2xl flex flex-col dark:bg-card/60 md:h-full">
         {/* Header */}
         <div className="px-3 py-2 border-b border-border/60 flex items-center justify-between flex-shrink-0">

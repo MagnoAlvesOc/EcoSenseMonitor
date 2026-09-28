@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Settings, Bell, Save, Webhook, Copy } from "lucide-react";
+import DeleteAccountCard from "@/components/configuracoes/DeleteAccountCard";
 import { useToast } from "@/components/ui/use-toast";
 
 function GlassCard({ children, className = "" }) {
@@ -189,6 +190,8 @@ void enviarDados() {
       <Button onClick={() => saveMutation.mutate(form)} disabled={saveMutation.isPending} className="w-full md:w-auto">
         <Save className="w-4 h-4 mr-2" /> Salvar Configurações
       </Button>
+
+      <DeleteAccountCard />
     </div>
   );
 }

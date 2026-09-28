@@ -208,8 +208,8 @@ export default function FontesExternasTab() {
                           {d.pressao_atmosferica_hpa != null && ` 🌬️ ${d.pressao_atmosferica_hpa.toFixed(0)}hPa`}
                         </span>
                       </div>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0" onClick={() => remove.mutate(d.id)}>
-                        <Trash2 className="w-3 h-3 text-muted-foreground" />
+                      <Button variant="ghost" size="icon" className="h-11 w-11 flex-shrink-0" onClick={() => remove.mutate(d.id)}>
+                        <Trash2 className="w-4 h-4 text-muted-foreground" />
                       </Button>
                     </div>
                   ))}

@@ -71,11 +71,25 @@ export default function ManutencaoTab() {
 
   const update = useMutation({
     mutationFn: ({ id, d }) => base44.entities.ManutencaoPreventiva.update(id, d),
+    onMutate: async ({ id, d }) => {
+      await qc.cancelQueries({ queryKey: ["manutencoes"] });
+      const previous = qc.getQueryData(["manutencoes"]);
+      qc.setQueryData(["manutencoes"], (old) => (old || []).map(m => m.id === id ? { ...m, ...d } : m));
+      return { previous };
+    },
+    onError: (_err, _vars, context) => qc.setQueryData(["manutencoes"], context?.previous),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["manutencoes"] }); setOpen(false); setEditingId(null); setForm(EMPTY); toast({ title: "Manutenção atualizada" }); },
   });
 
   const remove = useMutation({
     mutationFn: (id) => base44.entities.ManutencaoPreventiva.delete(id),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["manutencoes"] });
+      const previous = qc.getQueryData(["manutencoes"]);
+      qc.setQueryData(["manutencoes"], (old) => (old || []).filter(m => m.id !== id));
+      return { previous };
+    },
+    onError: (_err, _id, context) => qc.setQueryData(["manutencoes"], context?.previous),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["manutencoes"] }),
   });
 
@@ -224,11 +238,11 @@ export default function ManutencaoTab() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <AlertaBadge proxima_revisao={m.proxima_revisao} />
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => startEdit(m)} title="Editar manutenção">
-                    <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                  <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => startEdit(m)} title="Editar manutenção">
+                    <Pencil className="w-4 h-4 text-muted-foreground" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => remove.mutate(m.id)}>
-                    <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
+                  <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => remove.mutate(m.id)}>
+                    <Trash2 className="w-4 h-4 text-muted-foreground" />
                   </Button>
                 </div>
               </div>

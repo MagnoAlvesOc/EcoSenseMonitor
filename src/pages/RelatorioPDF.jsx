@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Loader2 } from "lucide-react";
 
 function GlassCard({ children, className = "" }) {
@@ -206,13 +207,19 @@ function IntegracoesSection() {
       <div className="bg-gray-50 rounded-xl p-4">
         <p className="text-sm font-semibold mb-2">Importar Dados Externos</p>
         <div className="flex gap-4 mb-3">
-          <select className="border rounded-lg px-3 py-2 text-sm flex-1" defaultValue="openweather">
-            <option value="openweather">OpenWeatherMap</option>
-            <option value="inmet">INMET</option>
-          </select>
-          <select className="border rounded-lg px-3 py-2 text-sm flex-1" defaultValue="">
-            <option value="">Selecionar estação</option>
-          </select>
+          <Select defaultValue="openweather">
+            <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="openweather">OpenWeatherMap</SelectItem>
+              <SelectItem value="openmeteo">Open-Meteo</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select defaultValue="none">
+            <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Selecionar estação</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <button className="w-full bg-orange-500 text-white rounded-lg py-2 text-sm font-medium">BUSCAR AGORA</button>
       </div>
