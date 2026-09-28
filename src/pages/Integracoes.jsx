@@ -3,7 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FontesExternasTab from "../components/integracoes/FontesExternasTab";
 import ComparacaoTab from "../components/integracoes/ComparacaoTab";
 import ExportApiTab from "../components/integracoes/ExportApiTab";
-import { Globe, BarChart3, Code2 } from "lucide-react";
+import TempoRealTab from "../components/integracoes/TempoRealTab";
+import { Globe, BarChart3, Code2, Zap } from "lucide-react";
 
 export default function Integracoes() {
   return (
@@ -13,8 +14,11 @@ export default function Integracoes() {
         <p className="text-xs text-muted-foreground">Importe dados de fontes externas, compare com suas estações e exporte via API JSON</p>
       </div>
 
-      <Tabs defaultValue="fontes">
+      <Tabs defaultValue="temporeal">
         <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg">
+          <TabsTrigger value="temporeal" className="flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5" /> Tempo Real
+          </TabsTrigger>
           <TabsTrigger value="fontes" className="flex items-center gap-1.5">
             <Globe className="w-3.5 h-3.5" /> Fontes Externas
           </TabsTrigger>
@@ -26,6 +30,9 @@ export default function Integracoes() {
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="temporeal" className="mt-4">
+          <TempoRealTab />
+        </TabsContent>
         <TabsContent value="fontes" className="mt-4">
           <FontesExternasTab />
         </TabsContent>
