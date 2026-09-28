@@ -61,7 +61,14 @@ async function fetchIoTData({ signal } = {}) {
       if (raw && typeof raw === "object") raw = [raw];
       else return lastValidData;
     }
-    const sorted = [...raw].sort((a, b) => getTs(b) - getTs(a));
+    // Altitude padrão: sempre a do GPS (altitude_gps_m) quando disponível;
+    // o valor do sensor BMP só é usado se o GPS não tiver altitude válida.
+    const normalized = raw.map((row) =>
+      row && typeof row === "object" && isValid(row.altitude_gps_m)
+        ? { ...row, altitude_m: Number(row.altitude_gps_m) }
+        : row
+    );
+    const sorted = [...normalized].sort((a, b) => getTs(b) - getTs(a));
     lastValidData = sorted;
     return sorted;
   } finally {
