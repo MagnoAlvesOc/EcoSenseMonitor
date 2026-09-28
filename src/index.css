@@ -151,4 +151,8 @@
     font-size: 9px;
     max-width: 55vw;
   }
+  /* Atribuição e controles do mapa ficam acima da barra de navegação inferior */
+  .leaflet-bottom {
+    bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  }
 }

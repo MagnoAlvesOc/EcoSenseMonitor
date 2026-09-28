@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import moment from "moment";
 
 const API_URL =
@@ -41,6 +41,36 @@ export function getTs(row) {
 }
 
 let lastValidData = [];
+
+// ── Cache offline (localStorage) ──────────────────────────────────────────────
+// Guarda as últimas leituras no aparelho para que os dados fiquem
+// disponíveis mesmo sem internet (modo offline).
+const OFFLINE_CACHE_KEY = "ecosense_iot_offline_v1";
+const OFFLINE_CACHE_MAX_ROWS = 600;
+const OFFLINE_WRITE_INTERVAL_MS = 30000;
+let lastCacheWriteMs = 0;
+
+export function readOfflineCache() {
+  try {
+    const raw = localStorage.getItem(OFFLINE_CACHE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed?.data) ? parsed.data : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeOfflineCache(rows) {
+  try {
+    localStorage.setItem(
+      OFFLINE_CACHE_KEY,
+      JSON.stringify({ saved_at: Date.now(), data: rows.slice(0, OFFLINE_CACHE_MAX_ROWS) })
+    );
+  } catch {
+    // Cota excedida — mantém o cache anterior
+  }
+}
 
 // Altitude padrão: sempre a do GPS (altitude_gps_m) quando disponível;
 // o valor do sensor BMP só é usado se o GPS não tiver altitude válida.
@@ -105,7 +135,7 @@ export function useExternalIoT() {
     refetchInterval: 3000,       // status em tempo real a cada 3s
     staleTime: 0,
     placeholderData: () => lastValidData,
-    initialData: [],
+    initialData: readOfflineCache, // dados do cache offline aparecem imediatamente
     retry: 1,
     refetchOnWindowFocus: true,
     refetchIntervalInBackground: true,
@@ -131,6 +161,15 @@ export function useExternalIoT() {
     }
     return merged.sort((a, b) => getTs(b) - getTs(a));
   }, [latestQ.data, historyQ.data]);
+
+  // Persiste as últimas leituras no aparelho (com throttle) para uso offline
+  useEffect(() => {
+    if (!data.length) return;
+    const now = Date.now();
+    if (now - lastCacheWriteMs < OFFLINE_WRITE_INTERVAL_MS) return;
+    lastCacheWriteMs = now;
+    writeOfflineCache(data);
+  }, [data]);
 
   return {
     data,
