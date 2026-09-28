@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import FloatingMapBg from "./FloatingMapBg";
 import SideNav from "./SideNav";
+import InstallAppBanner from "./InstallAppBanner";
 import AlertsNotifier from "../dashboard/AlertsNotifier";
 
 export default function AppLayout() {
@@ -15,6 +16,9 @@ export default function AppLayout() {
 
       {/* Critical alerts overlay */}
       <AlertsNotifier />
+
+      {/* Mobile install hint */}
+      <InstallAppBanner />
 
       {/* Page content — pointer-events-none so map stays interactive in empty areas.
           Each page is responsible for re-enabling pointer-events on its own panels. */}
