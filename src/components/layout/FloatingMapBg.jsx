@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents } from "react-leaflet";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -217,8 +217,10 @@ function getReadingTs(row) {
 export default function FloatingMapBg() {
   const { setSelectedStation, setClickedCoords, clickedCoords } = useStation();
   const [activeMetric, setActiveMetric] = useState("temperatura_c");
+  const queryClient = useQueryClient();
+  const autoRegisteredRef = useRef(new Set());
 
-  const { data: estacoes = [] } = useQuery({
+  const { data: estacoes = [], isSuccess: estacoesLoaded } = useQuery({
     queryKey: ["estacoes-bg"],
     queryFn: () => base44.entities.Estacoes.list(),
     refetchInterval: 5000,
@@ -235,6 +237,7 @@ export default function FloatingMapBg() {
         r.estacao_id === est.estacao_id ||
         r.estacao_id === est.id ||
         r.estacao_id === est.ip_local ||
+        r.estacao_nome === est.nome ||
         r.ip_local_estacao === est.ip_local
       )
       .sort((a, b) => getReadingTs(b) - getReadingTs(a));
@@ -258,6 +261,32 @@ export default function FloatingMapBg() {
     const secsSince = (Date.now() - getReadingTs(reading)) / 1000;
     return secsSince < ONLINE_THRESHOLD_S ? "online" : "offline";
   };
+
+  // ── Auto-registro: cria a estação no mapa quando a API envia GPS válido ────
+  useEffect(() => {
+    if (!estacoesLoaded) return;
+    apiData.forEach((r) => {
+      const keyId = r.estacao_id || r.estacao_nome;
+      if (!keyId || autoRegisteredRef.current.has(keyId)) return;
+      const lat = safeNum(r.latitude);
+      const lng = safeNum(r.longitude);
+      if (!r.gps_fix || lat == null || lng == null) return;
+      autoRegisteredRef.current.add(keyId);
+      const alreadyRegistered = estacoes.some(est =>
+        est.nome === r.estacao_nome || est.ip_local === r.estacao_id
+      );
+      if (alreadyRegistered) return;
+      base44.entities.Estacoes.create({
+        nome: r.estacao_nome || keyId,
+        descricao: "Estação registrada automaticamente via GPS",
+        latitude: lat,
+        longitude: lng,
+        ip_local: r.estacao_id || "",
+      })
+        .then(() => queryClient.invalidateQueries({ queryKey: ["estacoes"] }))
+        .catch(() => autoRegisteredRef.current.delete(keyId));
+    });
+  }, [apiData, estacoes, estacoesLoaded, queryClient]);
 
   const scale = SCALES[activeMetric];
   const center = estacoes.length > 0 ? [estacoes[0].latitude, estacoes[0].longitude] : [-2.5, -44.28];

@@ -55,8 +55,12 @@ async function fetchIoTData({ signal } = {}) {
       credentials: "omit",
     });
     if (!res.ok) throw new Error("API error");
-    const raw = await res.json();
-    if (!Array.isArray(raw)) return lastValidData;
+    let raw = await res.json();
+    // A API pode retornar uma única leitura (objeto) ou uma lista — normaliza para array.
+    if (!Array.isArray(raw)) {
+      if (raw && typeof raw === "object") raw = [raw];
+      else return lastValidData;
+    }
     const sorted = [...raw].sort((a, b) => getTs(b) - getTs(a));
     lastValidData = sorted;
     return sorted;
