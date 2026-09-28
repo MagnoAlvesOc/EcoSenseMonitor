@@ -14,14 +14,14 @@ export default function Manutencao() {
       </div>
 
       <Tabs defaultValue="custos">
-        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg">
-          <TabsTrigger value="custos" className="flex items-center gap-1.5">
+        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto md:w-auto md:justify-center">
+          <TabsTrigger value="custos" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
             <DollarSign className="w-3.5 h-3.5" /> Custos
           </TabsTrigger>
-          <TabsTrigger value="preventiva" className="flex items-center gap-1.5">
+          <TabsTrigger value="preventiva" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
             <Wrench className="w-3.5 h-3.5" /> Manutenção Preventiva
           </TabsTrigger>
-          <TabsTrigger value="relatorio" className="flex items-center gap-1.5">
+          <TabsTrigger value="relatorio" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
             <FileDown className="w-3.5 h-3.5" /> Relatório PDF
           </TabsTrigger>
         </TabsList>
