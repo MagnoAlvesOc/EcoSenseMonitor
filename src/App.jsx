@@ -16,9 +16,22 @@ import Configuracoes from './pages/Configuracoes';
 import Manutencao from './pages/Manutencao';
 import Integracoes from './pages/Integracoes';
 import RelatorioPDF from './pages/RelatorioPDF';
+import Sobre from './pages/Sobre';
+import Contato from './pages/Contato';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const isPublicPage = ["/sobre", "/contato"].includes(window.location.pathname);
+
+  if (isPublicPage) {
+    return (
+      <Routes>
+        <Route path="/sobre" element={<Sobre />} />
+        <Route path="/contato" element={<Contato />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    );
+  }
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -50,6 +63,9 @@ const AuthenticatedApp = () => {
         <Route path="/relatorio-pdf" element={<RelatorioPDF />} />
         <Route path="/RelatorioPDF" element={<RelatorioPDF />} />
       </Route>
+      {/* Páginas públicas — acessíveis sem login */}
+      <Route path="/sobre" element={<Sobre />} />
+      <Route path="/contato" element={<Contato />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Map, BarChart3, Settings,
-  Activity, Sun, Moon, Radio, Globe
+  Activity, Sun, Moon, Radio, Globe, Info, Mail
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -15,6 +15,8 @@ const navItems = [
   { path: "/logs",         icon: Activity,        label: "Logs" },
   { path: "/integracoes",  icon: Globe,           label: "Integrações" },
   { path: "/configuracoes",icon: Settings,        label: "Config" },
+  { path: "/sobre",        icon: Info,            label: "Sobre" },
+  { path: "/contato",      icon: Mail,            label: "Contato" },
 ];
 
 export default function SideNav() {
