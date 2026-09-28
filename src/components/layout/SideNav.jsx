@@ -33,9 +33,10 @@ export default function SideNav() {
 
   return (
     <aside
-      className="fixed z-50 flex bg-background/95 backdrop-blur-xl border-border/60 shadow-2xl
-        inset-x-0 bottom-0 h-[calc(3.5rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] border-t
-        md:inset-x-auto md:bottom-auto md:left-0 md:top-0 md:h-full md:pb-0 md:w-[170px] md:border-t-0 md:border-r md:flex-col"
+      className="fixed z-50 flex bg-background/95 backdrop-blur-xl border border-border/60 shadow-2xl rounded-2xl
+        left-3 right-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] h-14
+        md:rounded-none md:left-0 md:right-auto md:bottom-auto md:top-0 md:h-full md:w-[170px]
+        md:border-t-0 md:border-b-0 md:border-l-0 md:flex-col"
     >
       {/* Logo — apenas desktop */}
       <div className="hidden md:flex items-center gap-3 px-2 py-4 border-b border-border/40">

@@ -128,8 +128,8 @@
      inferior esquerdo (acima da barra de navegação), fora da legenda */
   .leaflet-top.leaflet-left {
     top: auto;
-    left: 10px;
-    bottom: calc(5.5rem + env(safe-area-inset-bottom));
+    left: 12px;
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
   }
   .leaflet-control-zoom {
     border: none !important;
@@ -152,9 +152,9 @@
     font-size: 9px;
     max-width: 55vw;
   }
-  /* Atribuição e controles do mapa ficam acima da barra de navegação inferior */
+  /* Atribuição do mapa acima da barra de navegação flutuante */
   .leaflet-bottom {
-    bottom: calc(3.5rem + env(safe-area-inset-bottom));
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
   }
 
   /* Sem barras de rolagem visíveis — comportamento de app nativo */
