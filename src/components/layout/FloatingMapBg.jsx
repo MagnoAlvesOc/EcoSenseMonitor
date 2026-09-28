@@ -362,7 +362,7 @@ export default function FloatingMapBg() {
                   pathOptions={{
                     color: color,
                     fillColor: color,
-                    fillOpacity: 0.12,
+                    fillOpacity: 0.04,
                     weight: 0,
                   }}
                 />
@@ -376,8 +376,8 @@ export default function FloatingMapBg() {
                   pathOptions={{
                     color: color,
                     fillColor: color,
-                    fillOpacity: isOnline ? 0.75 : 0.3,
-                    weight: 2,
+                    fillOpacity: isOnline ? 0.07 : 0.05,
+                    weight: 1,
                   }}
                 />
               )}
