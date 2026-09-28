@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import moment from "moment";
 
 const API_URL =
@@ -41,53 +42,101 @@ export function getTs(row) {
 
 let lastValidData = [];
 
-async function fetchIoTData({ signal } = {}) {
-  // Timeout: se o Apps Script demorar mais que o limite, aborta e tenta de novo
-  // no próximo ciclo, evitando que um fetch lento bloqueie as atualizações.
+// Altitude padrão: sempre a do GPS (altitude_gps_m) quando disponível;
+// o valor do sensor BMP só é usado se o GPS não tiver altitude válida.
+function normalizeAltitude(row) {
+  return row && typeof row === "object" && isValid(row.altitude_gps_m)
+    ? { ...row, altitude_m: Number(row.altitude_gps_m) }
+    : row;
+}
+
+function toRows(raw, fallback) {
+  if (Array.isArray(raw)) return raw;
+  if (raw && typeof raw === "object") return [raw];
+  return fallback ?? [];
+}
+
+// Leitura mais recente (payload leve) — mantém o status em tempo real.
+async function fetchLatest({ signal } = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 4000);
-
   try {
-    // Cache-busting + signal para abortar em timeout
     const res = await fetch(`${API_URL}?t=${Date.now()}`, {
       signal: signal || controller.signal,
       cache: "no-store",
       credentials: "omit",
     });
     if (!res.ok) throw new Error("API error");
-    let raw = await res.json();
-    // A API pode retornar uma única leitura (objeto) ou uma lista — normaliza para array.
-    if (!Array.isArray(raw)) {
-      if (raw && typeof raw === "object") raw = [raw];
-      else return lastValidData;
-    }
-    // Altitude padrão: sempre a do GPS (altitude_gps_m) quando disponível;
-    // o valor do sensor BMP só é usado se o GPS não tiver altitude válida.
-    const normalized = raw.map((row) =>
-      row && typeof row === "object" && isValid(row.altitude_gps_m)
-        ? { ...row, altitude_m: Number(row.altitude_gps_m) }
-        : row
-    );
-    const sorted = [...normalized].sort((a, b) => getTs(b) - getTs(a));
-    lastValidData = sorted;
-    return sorted;
+    const rows = toRows(await res.json(), lastValidData).map(normalizeAltitude);
+    lastValidData = rows;
+    return rows;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+// Histórico da planilha: o Apps Script devolve no máximo as 1000 leituras
+// mais recentes (parâmetro ?limit=, com teto de 1000 no próprio script).
+// Payload maior, então é buscado com menos frequência e mesclado ao vivo.
+const HISTORY_LIMIT = 1000;
+
+async function fetchHistory({ signal } = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(`${API_URL}?limit=${HISTORY_LIMIT}&t=${Date.now()}`, {
+      signal: signal || controller.signal,
+      cache: "no-store",
+      credentials: "omit",
+    });
+    if (!res.ok) throw new Error("API error");
+    return toRows(await res.json(), [])
+      .map(normalizeAltitude)
+      .sort((a, b) => getTs(b) - getTs(a));
   } finally {
     clearTimeout(timeout);
   }
 }
 
 export function useExternalIoT() {
-  return useQuery({
-    queryKey: ["external-iot"],
-    queryFn: fetchIoTData,
-    refetchInterval: 3000,       // busca a cada 3s para detecção em tempo real
-    staleTime: 0,                // sempre busca dados frescos
+  const latestQ = useQuery({
+    queryKey: ["external-iot-latest"],
+    queryFn: fetchLatest,
+    refetchInterval: 3000,       // status em tempo real a cada 3s
+    staleTime: 0,
     placeholderData: () => lastValidData,
     initialData: [],
     retry: 1,
     refetchOnWindowFocus: true,
     refetchIntervalInBackground: true,
   });
+
+  const historyQ = useQuery({
+    queryKey: ["external-iot-history"],
+    queryFn: fetchHistory,
+    refetchInterval: 300000,     // histórico a cada 5 min
+    staleTime: 240000,
+    retry: 1,
+    refetchOnWindowFocus: true,
+  });
+
+  const data = useMemo(() => {
+    const seen = new Set();
+    const merged = [];
+    for (const row of [...(historyQ.data ?? []), ...(latestQ.data ?? [])]) {
+      const key = `${row?.estacao_id ?? row?.estacao_nome ?? ""}|${getTs(row)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(row);
+    }
+    return merged.sort((a, b) => getTs(b) - getTs(a));
+  }, [latestQ.data, historyQ.data]);
+
+  return {
+    data,
+    isLoading: latestQ.isLoading || historyQ.isLoading,
+    isError: latestQ.isError && historyQ.isError,
+  };
 }
 
 // Filter data by date range using timestamp_recebimento (fallback data_servidor)

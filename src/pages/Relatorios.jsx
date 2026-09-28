@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Download, FileText, FileSpreadsheet } from "lucide-react";
 import DateRangeSelector from "../components/shared/DateRangeSelector";
+import TrendPanel from "@/components/relatorios/TrendPanel";
 import moment from "moment";
 import { useExternalIoT, filterByRange, safeNum, fmt, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
 import * as XLSX from "xlsx";
@@ -154,6 +155,9 @@ export default function Relatorios() {
           onPresetChange={handlePreset}
         />
       </GlassCard>
+
+      {/* Painel de gráficos — variação histórica de temperatura e umidade */}
+      <TrendPanel data={filteredData} isLoading={isLoading} />
 
       {/* Table */}
       <GlassCard className="p-4">
