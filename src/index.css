@@ -156,6 +156,14 @@
     bottom: calc(3.5rem + env(safe-area-inset-bottom));
   }
 
+  /* Sem barras de rolagem visíveis — comportamento de app nativo */
+  * {
+    scrollbar-width: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Painéis translúcidos ("vidro") ficam opacos no celular para que o mapa
      de fundo não apareça por baixo do conteúdo — o mapa continua visível
      apenas nas áreas livres entre os painéis */

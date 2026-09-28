@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents, useMap } from "react-leaflet";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import "leaflet/dist/leaflet.css";
@@ -9,6 +9,25 @@ import { useStation } from "@/lib/StationContext";
 import { useExternalIoT, safeNum, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
 
 delete L.Icon.Default.prototype._getIconUrl;
+
+// Recalcula o tamanho do mapa quando a janela/rotação muda — sem isso o Leaflet
+// mantém as dimensões antigas e o mapa fica "fora de esquadro" (faixa cinza,
+// conteúdo desalinhado) após redimensionar o viewport.
+function MapAutoResize() {
+  const map = useMap();
+  useEffect(() => {
+    const invalidate = () => map.invalidateSize();
+    const t = setTimeout(invalidate, 200);
+    window.addEventListener("resize", invalidate);
+    window.addEventListener("orientationchange", invalidate);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", invalidate);
+      window.removeEventListener("orientationchange", invalidate);
+    };
+  }, [map]);
+  return null;
+}
 
 // ── Color scale helpers ──────────────────────────────────────────────────────
 function lerp(a, b, t) { return a + (b - a) * Math.min(Math.max(t, 0), 1); }
@@ -392,6 +411,7 @@ export default function FloatingMapBg() {
           attribution=''
           noWrap={true}
         />
+        <MapAutoResize />
         <MapClickHandler onMapClick={setClickedCoords} />
 
         {estacoes.map(est => {
