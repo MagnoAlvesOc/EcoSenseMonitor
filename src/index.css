@@ -115,3 +115,40 @@
       color 300ms ease, fill 300ms ease, stroke 300ms ease !important;
   }
 }
+
+/* Controles do mapa otimizados para toque no celular */
+@media (max-width: 767px) {
+  .leaflet-container {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    touch-action: none;
+  }
+  /* Botões de zoom: alvos de toque de 44px, reposicionados para o canto
+     inferior esquerdo (acima da barra de navegação), fora da legenda */
+  .leaflet-top.leaflet-left {
+    top: auto;
+    left: 10px;
+    bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+  .leaflet-control-zoom {
+    border: none !important;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+  .leaflet-control-zoom a {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    font-size: 24px !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: #1c1917 !important;
+  }
+  .leaflet-control-zoom a:hover {
+    background-color: #ffffff !important;
+  }
+  .leaflet-control-attribution {
+    font-size: 9px;
+    max-width: 55vw;
+  }
+}

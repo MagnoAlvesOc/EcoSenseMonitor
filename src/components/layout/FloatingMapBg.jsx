@@ -372,6 +372,10 @@ export default function FloatingMapBg() {
         scrollWheelZoom={true}
         doubleClickZoom={true}
         dragging={true}
+        touchZoom={true}
+        inertia={true}
+        zoomSnap={0.5}
+        zoomDelta={0.5}
         attributionControl={true}
         worldCopyJump={false}
       >
