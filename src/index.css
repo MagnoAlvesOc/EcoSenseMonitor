@@ -89,6 +89,7 @@
   body {
     @apply bg-background text-foreground font-inter;
     overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
   }
 
   /* Compatibilidade WebView mobile (iOS/Android) */

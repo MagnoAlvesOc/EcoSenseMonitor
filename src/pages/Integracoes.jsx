@@ -15,17 +15,17 @@ export default function Integracoes() {
       </div>
 
       <Tabs defaultValue="temporeal">
-        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg">
-          <TabsTrigger value="temporeal" className="flex items-center gap-1.5">
+        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto md:w-auto md:justify-center">
+          <TabsTrigger value="temporeal" className="flex items-center gap-1.5 whitespace-nowrap">
             <Zap className="w-3.5 h-3.5" /> Tempo Real
           </TabsTrigger>
-          <TabsTrigger value="fontes" className="flex items-center gap-1.5">
+          <TabsTrigger value="fontes" className="flex items-center gap-1.5 whitespace-nowrap">
             <Globe className="w-3.5 h-3.5" /> Fontes Externas
           </TabsTrigger>
-          <TabsTrigger value="comparacao" className="flex items-center gap-1.5">
+          <TabsTrigger value="comparacao" className="flex items-center gap-1.5 whitespace-nowrap">
             <BarChart3 className="w-3.5 h-3.5" /> Comparação
           </TabsTrigger>
-          <TabsTrigger value="export" className="flex items-center gap-1.5">
+          <TabsTrigger value="export" className="flex items-center gap-1.5 whitespace-nowrap">
             <Code2 className="w-3.5 h-3.5" /> API de Exportação
           </TabsTrigger>
         </TabsList>

@@ -22,7 +22,7 @@ export default function AppLayout() {
 
       {/* Page content — pointer-events-none so map stays interactive in empty areas.
           Each page is responsible for re-enabling pointer-events on its own panels. */}
-      <div className="absolute inset-0 z-40 pointer-events-none overflow-y-auto">
+      <div className="absolute inset-0 z-40 pointer-events-none overflow-y-auto overflow-x-hidden">
         <div className="min-h-full p-3 pb-[calc(7rem+env(safe-area-inset-bottom))] md:p-5 md:pb-6 md:pl-[182px]">
           <Outlet />
         </div>
