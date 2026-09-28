@@ -9,6 +9,7 @@ import { Plus, MapPin, Wifi, WifiOff, Trash2, Download, Pencil, Crosshair } from
 import { useToast } from "@/components/ui/use-toast";
 import GeoLocateButton from "@/components/stations/GeoLocateButton";
 import { useStation } from "@/lib/StationContext";
+import { useExternalIoT, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
 import moment from "moment";
 
 function GlassCard({ children, className = "" }) {
@@ -39,6 +40,10 @@ export default function MapaEstacoes() {
     queryFn: () => base44.entities.HistoricoLeituras.list("-timestamp_recebimento", 100),
     refetchInterval: 60000,
   });
+
+  // Fonte ao vivo (mesma API do mapa) — usada para o status online/offline
+  const { data: rawApiData } = useExternalIoT();
+  const apiData = rawApiData ?? [];
 
   const createStation = useMutation({
     mutationFn: (data) => base44.entities.Estacoes.create(data),
@@ -71,9 +76,15 @@ export default function MapaEstacoes() {
   };
 
   const getStationStatus = (estacao) => {
-    const stationReadings = leituras.filter(l => l.estacao_id === estacao.id);
+    const stationReadings = apiData.filter(r =>
+      r.estacao_id === estacao.id ||
+      r.estacao_id === estacao.ip_local ||
+      r.estacao_nome === estacao.nome ||
+      r.ip_local_estacao === estacao.ip_local
+    );
     if (!stationReadings.length) return "offline";
-    return moment().diff(moment(stationReadings[0].timestamp_recebimento), "minutes") < 10 ? "online" : "offline";
+    const latest = Math.max(...stationReadings.map(r => getTs(r)));
+    return (Date.now() - latest) / 1000 < ONLINE_THRESHOLD_S ? "online" : "offline";
   };
 
   const handleExportCSV = () => {
