@@ -124,12 +124,14 @@
     -webkit-touch-callout: none;
     touch-action: none;
   }
-  /* Botões de zoom: alvos de toque de 44px, reposicionados para o canto
-     inferior esquerdo (acima da barra de navegação), fora da legenda */
+  /* Botões de zoom: alvos de toque de 44px, ancorados na borda direita,
+     verticalmente centrados — longe da barra de navegação e dos painéis */
   .leaflet-top.leaflet-left {
-    top: auto;
-    left: 12px;
-    bottom: calc(4.75rem + env(safe-area-inset-bottom));
+    top: 50%;
+    left: auto;
+    right: 12px;
+    bottom: auto;
+    transform: translateY(-50%);
   }
   .leaflet-control-zoom {
     border: none !important;
