@@ -175,7 +175,7 @@ function Popup({ open, onClose, children, style, className = "" }) {
 function KpiPopup({ kpis, open, onClose }) {
   return (
     <Popup open={open} onClose={onClose}
-      className="absolute left-[182px] top-12"
+      className="absolute right-3 top-12 md:left-[182px] md:right-auto"
     >
       <div className="bg-card/95 backdrop-blur-2xl border border-border rounded-2xl shadow-2xl p-2.5 w-[168px] dark:bg-card/90">
         {/* Header */}
@@ -223,7 +223,7 @@ function ChartDrawer({ data, externalData }) {
 
   if (!open) {
     return (
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+      <div className="fixed bottom-36 md:bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
         <button
           onClick={() => setOpen(true)}
           className="flex items-center gap-2 bg-card/85 backdrop-blur-xl border border-border rounded-full px-4 py-2 shadow-lg hover:bg-card transition-colors dark:bg-card/50"
@@ -239,9 +239,7 @@ function ChartDrawer({ data, externalData }) {
   return (
     <div className="fixed inset-0 z-[60] pointer-events-auto">
       <div className="absolute inset-0 bg-black/20" onClick={() => setOpen(false)} />
-      <div className="absolute inset-x-0 bottom-0 bg-card/95 backdrop-blur-2xl border-t border-border rounded-t-2xl shadow-2xl max-h-[60vh] overflow-y-auto dark:bg-card/90"
-        style={{ marginLeft: "182px" }}
-      >
+      <div className="absolute inset-x-0 bottom-0 bg-card/95 backdrop-blur-2xl border-t border-border rounded-t-2xl shadow-2xl max-h-[60vh] overflow-y-auto dark:bg-card/90 md:ml-[182px]">
         <div className="sticky top-0 bg-card/95 backdrop-blur-2xl border-b border-border px-5 py-3 flex items-center justify-between z-10 dark:bg-card/90">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -286,7 +284,7 @@ function ChartDrawer({ data, externalData }) {
 // ── Toggle buttons (always visible) ──────────────────────────────────────────
 function KpiToggle({ onClick, isOpen }) {
   return (
-    <div className="fixed left-[182px] top-3 z-40 pointer-events-auto">
+    <div className="fixed right-3 top-3 md:left-[182px] md:right-auto z-40 pointer-events-auto">
       <button
         onClick={onClick}
         className="flex items-center gap-1.5 bg-card/85 backdrop-blur-xl border border-border rounded-lg px-2.5 py-1.5 shadow-lg hover:bg-card transition-colors dark:bg-card/50"
@@ -409,7 +407,7 @@ export default function Dashboard() {
 
       {/* Loading state */}
       {isLoading && !allData.length && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none" style={{ paddingLeft: "182px" }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none md:pl-[182px]">
           <div className="bg-card/90 backdrop-blur-xl border border-border rounded-2xl px-6 py-4 shadow-xl pointer-events-auto">
             <div className="flex items-center gap-3">
               <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -421,7 +419,7 @@ export default function Dashboard() {
 
       {/* No data state */}
       {!isLoading && !isError && !latest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none" style={{ paddingLeft: "182px" }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none md:pl-[182px]">
           <div className="bg-card/90 backdrop-blur-xl border border-border rounded-2xl px-6 py-4 shadow-xl text-center pointer-events-auto">
             <Wifi className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
             <p className="text-sm font-semibold text-muted-foreground">Nenhum dado recebido</p>

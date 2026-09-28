@@ -130,7 +130,7 @@ export default function AlertsNotifier() {
   if (!unread.length) return null;
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto flex flex-col gap-2" style={{ width: "360px" }}>
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto flex flex-col gap-2 w-[360px] max-w-[calc(100vw-1.5rem)]">
       {unread.map(a => (
         <AlertCard key={a.id} alerta={a} onDismiss={(id) => dismissMutation.mutate(id)} />
       ))}

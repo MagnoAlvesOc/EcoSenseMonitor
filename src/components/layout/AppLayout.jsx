@@ -19,7 +19,7 @@ export default function AppLayout() {
       {/* Page content — pointer-events-none so map stays interactive in empty areas.
           Each page is responsible for re-enabling pointer-events on its own panels. */}
       <div className="absolute inset-0 z-40 pointer-events-none overflow-y-auto">
-        <div className="min-h-full p-3 md:p-5" style={{ paddingLeft: "182px" }}>
+        <div className="min-h-full p-3 pb-28 md:p-5 md:pb-6 md:pl-[182px]">
           <Outlet />
         </div>
       </div>

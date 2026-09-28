@@ -95,7 +95,7 @@ function Legend({ scale, activeMetric }) {
   if (!scale) return null;
   return (
     <div
-      className="absolute bottom-6 right-4 z-[1000] pointer-events-auto"
+      className="absolute top-16 left-3 md:top-auto md:left-auto md:bottom-6 md:right-4 z-[1000] pointer-events-auto"
       style={{ minWidth: 130 }}
     >
       <div className="bg-background/90 backdrop-blur-md rounded-xl border border-border shadow-xl p-3">
@@ -124,7 +124,7 @@ function Legend({ scale, activeMetric }) {
 // ── Metric selector ──────────────────────────────────────────────────────────
 function MetricSelector({ activeMetric, onChange }) {
   return (
-    <div className="absolute top-4 right-4 z-[1000] pointer-events-auto">
+    <div className="absolute top-16 right-3 md:top-4 md:right-4 z-[1000] pointer-events-auto">
       <div className="bg-background/90 backdrop-blur-md rounded-xl border border-border shadow-xl p-2 flex flex-col gap-1">
         {Object.entries(SCALES).map(([key, s]) => (
           <button
