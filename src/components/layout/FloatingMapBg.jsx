@@ -219,6 +219,7 @@ export default function FloatingMapBg() {
   const [activeMetric, setActiveMetric] = useState("temperatura_c");
   const queryClient = useQueryClient();
   const autoRegisteredRef = useRef(new Set());
+  const lastSyncedRef = useRef({});
 
   const { data: estacoes = [], isSuccess: estacoesLoaded } = useQuery({
     queryKey: ["estacoes-bg"],
@@ -266,25 +267,43 @@ export default function FloatingMapBg() {
   useEffect(() => {
     if (!estacoesLoaded) return;
     apiData.forEach((r) => {
-      const keyId = r.estacao_id || r.estacao_nome;
-      if (!keyId || autoRegisteredRef.current.has(keyId)) return;
       const lat = safeNum(r.latitude);
       const lng = safeNum(r.longitude);
       if (!r.gps_fix || lat == null || lng == null) return;
-      autoRegisteredRef.current.add(keyId);
-      const alreadyRegistered = estacoes.some(est =>
+      const keyId = r.estacao_id || r.estacao_nome;
+      if (!keyId) return;
+      const matched = estacoes.find(est =>
         est.nome === r.estacao_nome || est.ip_local === r.estacao_id
       );
-      if (alreadyRegistered) return;
-      base44.entities.Estacoes.create({
-        nome: r.estacao_nome || keyId,
-        descricao: "Estação registrada automaticamente via GPS",
+      if (!matched) {
+        if (autoRegisteredRef.current.has(keyId)) return;
+        autoRegisteredRef.current.add(keyId);
+        base44.entities.Estacoes.create({
+          nome: r.estacao_nome || keyId,
+          descricao: "Estação registrada automaticamente via GPS",
+          latitude: lat,
+          longitude: lng,
+          ip_local: r.estacao_id || "",
+        })
+          .then(() => queryClient.invalidateQueries({ queryKey: ["estacoes"] }))
+          .catch(() => autoRegisteredRef.current.delete(keyId));
+        return;
+      }
+      // Atualiza a posição cadastrada sempre que o GPS muda (tolerância ~50 m)
+      const drift = Math.max(
+        Math.abs((matched.latitude ?? 0) - lat),
+        Math.abs((matched.longitude ?? 0) - lng)
+      );
+      const posKey = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+      if (drift <= 0.0005 || lastSyncedRef.current[matched.id] === posKey) return;
+      lastSyncedRef.current[matched.id] = posKey;
+      base44.entities.Estacoes.update(matched.id, {
         latitude: lat,
         longitude: lng,
-        ip_local: r.estacao_id || "",
+        ultima_sincronizacao: new Date().toISOString(),
       })
         .then(() => queryClient.invalidateQueries({ queryKey: ["estacoes"] }))
-        .catch(() => autoRegisteredRef.current.delete(keyId));
+        .catch(() => { delete lastSyncedRef.current[matched.id]; });
     });
   }, [apiData, estacoes, estacoesLoaded, queryClient]);
 
@@ -328,11 +347,11 @@ export default function FloatingMapBg() {
 
           return (
             <React.Fragment key={est.id}>
-              {/* Outer glow ring */}
+              {/* Outer glow ring — raio efetivo máximo de 15 km */}
               {isOnline && value != null && (
                 <Circle
                   center={position}
-                  radius={25000}
+                  radius={15000}
                   pathOptions={{
                     color: color,
                     fillColor: color,
