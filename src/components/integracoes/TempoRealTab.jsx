@@ -35,25 +35,23 @@ function DeltaBadge({ delta, unit }) {
   );
 }
 
-// Busca INMET (pública, sem chave) pela coordenada — leitura mais recente do dia
-async function fetchINMET(lat, lng) {
-  const hoje = moment().format("YYYY-MM-DD");
-  const res = await fetch(`https://apitempo.inmet.gov.br/estacao/${hoje}/${hoje}/${lat}/${lng}`);
-  if (!res.ok) throw new Error(`INMET: ${res.status} ${res.statusText}`);
-  const arr = await res.json();
-  const rows = (Array.isArray(arr) ? arr : []).filter(r => r && (r.TEM_INS != null || r.UMD_INS != null));
-  const last = rows[rows.length - 1];
-  if (!last) throw new Error("Sem leituras do INMET agora — atualizam a cada hora");
-  const ts = last.DT_MEDICAO && last.HR_MEDICAO
-    ? moment(`${last.DT_MEDICAO} ${last.HR_MEDICAO}`, "YYYY-MM-DD HH:mm:ss").valueOf()
-    : Date.now();
+// Busca Open-Meteo (pública, sem chave) pela coordenada — condições atuais
+async function fetchOpenMeteo(lat, lng) {
+  const res = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}` +
+    `&current=temperature_2m,relative_humidity_2m,surface_pressure&timezone=America/Sao_Paulo`
+  );
+  if (!res.ok) throw new Error(`Open-Meteo: ${res.status} ${res.statusText}`);
+  const d = await res.json();
+  const cur = d.current;
+  if (!cur) throw new Error("Sem dados atuais do Open-Meteo agora");
   return {
-    fonte: "INMET",
-    nome: last.DC_NOME || "Estação INMET",
-    ts,
-    temperatura_c: parseFloat(last.TEM_INS) || null,
-    umidade_relativa_perc: parseFloat(last.UMD_INS) || null,
-    pressao_atmosferica_hpa: parseFloat(last.PRE_INS) || null,
+    fonte: "Open-Meteo",
+    nome: "Open-Meteo (modelo meteorológico)",
+    ts: moment(cur.time).valueOf(),
+    temperatura_c: cur.temperature_2m ?? null,
+    umidade_relativa_perc: cur.relative_humidity_2m ?? null,
+    pressao_atmosferica_hpa: cur.surface_pressure ?? null,
   };
 }
 
@@ -75,7 +73,7 @@ async function fetchOpenWeather(lat, lng) {
 }
 
 export default function TempoRealTab() {
-  const [fonte, setFonte] = useState("inmet");
+  const [fonte, setFonte] = useState("openmeteo");
   const [stationKey, setStationKey] = useState("");
 
   // Leitura ao vivo da(s) estação(ões) — atualiza a cada 3s
@@ -120,7 +118,7 @@ export default function TempoRealTab() {
   const { data: externo, isLoading: extLoading, error: extError } = useQuery({
     queryKey: ["externo-realtime", fonte, coords?.lat?.toFixed?.(4), coords?.lng?.toFixed?.(4)],
     enabled: !!coords,
-    queryFn: () => (fonte === "inmet" ? fetchINMET(coords.lat, coords.lng) : fetchOpenWeather(coords.lat, coords.lng)),
+    queryFn: () => (fonte === "openweather" ? fetchOpenWeather(coords.lat, coords.lng) : fetchOpenMeteo(coords.lat, coords.lng)),
     refetchInterval: 10 * 60 * 1000,
     retry: 0,
   });
@@ -170,7 +168,7 @@ export default function TempoRealTab() {
             <Select value={fonte} onValueChange={setFonte}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="inmet">INMET (gratuita, sem chave)</SelectItem>
+                <SelectItem value="openmeteo">Open-Meteo (gratuita, sem chave)</SelectItem>
                 <SelectItem value="openweather">OpenWeatherMap (usa a chave salva)</SelectItem>
               </SelectContent>
             </Select>
