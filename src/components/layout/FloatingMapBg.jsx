@@ -66,15 +66,23 @@ function getScaleColor(scale, value) {
   return toRgb(lerpColor(stops[idx], stops[idx + 1], localT));
 }
 
-function makeStationIcon(color, isOnline, label) {
+function makeStationIcon(color, isOnline, label, hasAlert) {
   const pulse = isOnline ? `
     <circle cx="18" cy="6" r="5" fill="${color}" opacity="0.25">
       <animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite"/>
       <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
     </circle>` : "";
+  // Destaque de alerta crítico: pulso vermelho rápido + selo "!" sobre o pino
+  const alertBadge = hasAlert ? `
+    <circle cx="18" cy="6" r="9" fill="#dc2626" opacity="0.3">
+      <animate attributeName="r" values="8;13;8" dur="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0;0.5" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="29" cy="7" r="7" fill="#dc2626" stroke="white" stroke-width="1.5"/>
+    <text x="29" y="10.5" text-anchor="middle" font-size="9" font-weight="bold" fill="white" font-family="Arial,sans-serif">!</text>` : "";
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44">
-      ${pulse}
+      ${pulse}${alertBadge}
       <path d="M18 2C10.268 2 4 8.268 4 16c0 10 14 26 14 26s14-16 14-26C32 8.268 25.732 2 18 2z"
         fill="${color}" stroke="white" stroke-width="2"/>
       <circle cx="18" cy="16" r="6" fill="white" opacity="0.9"/>
@@ -88,6 +96,37 @@ function makeStationIcon(color, isOnline, label) {
     iconAnchor: [18, 44],
     popupAnchor: [0, -46],
   });
+}
+
+// ── Alertas críticos por estação (limites do AlertConfig) ─────────────────────
+const LIMITS_DEFAULT = {
+  temperatura_max: 40,
+  temperatura_min: 5,
+  umidade_max: 95,
+  umidade_min: 20,
+  co2_max: 1000,
+  bateria_min_v: 3.3,
+};
+
+function getCriticalAlerts(reading, cfg = {}) {
+  if (!reading) return [];
+  const L = { ...LIMITS_DEFAULT, ...cfg };
+  const alerts = [];
+  const temp = safeNum(reading.temperatura_c);
+  if (temp != null) {
+    if (temp >= L.temperatura_max) alerts.push(`Temperatura alta: ${temp.toFixed(1)}°C (limite ${L.temperatura_max}°C)`);
+    if (temp <= L.temperatura_min) alerts.push(`Temperatura baixa: ${temp.toFixed(1)}°C (limite ${L.temperatura_min}°C)`);
+  }
+  const umid = safeNum(reading.umidade_relativa_perc);
+  if (umid != null) {
+    if (umid >= L.umidade_max) alerts.push(`Umidade alta: ${umid.toFixed(1)}% (limite ${L.umidade_max}%)`);
+    if (umid <= L.umidade_min) alerts.push(`Umidade baixa: ${umid.toFixed(1)}% (limite ${L.umidade_min}%)`);
+  }
+  const co2 = safeNum(reading.nivel_co2);
+  if (co2 != null && co2 >= L.co2_max) alerts.push(`CO₂ alto: ${co2.toFixed(0)} ppm (limite ${L.co2_max} ppm)`);
+  const bat = safeNum(reading.status_bateria_v);
+  if (bat != null && bat <= L.bateria_min_v) alerts.push(`Bateria baixa: ${bat.toFixed(2)} V (limite ${L.bateria_min_v} V)`);
+  return alerts;
 }
 
 // ── Legend component ─────────────────────────────────────────────────────────
@@ -228,6 +267,14 @@ export default function FloatingMapBg() {
     refetchInterval: 5000,
   });
 
+  // Limites críticos configurados (AlertConfig) para destacar estações no mapa
+  const { data: alertConfigs = [] } = useQuery({
+    queryKey: ["alert-config-bg"],
+    queryFn: () => base44.entities.AlertConfig.list(),
+    refetchInterval: 60000,
+  });
+  const alertCfg = alertConfigs[0] || {};
+
   // Use external API as the source of truth for readings
   const { data: rawApiData } = useExternalIoT();
   const apiData = rawApiData ?? [];
@@ -346,6 +393,7 @@ export default function FloatingMapBg() {
         {estacoes.map(est => {
           const reading = getLatestReading(est);
           const status = getStatus(est);
+          const alerts = getCriticalAlerts(reading, alertCfg);
           const rawValue = reading ? reading[activeMetric] : null;
           const value = safeNum(rawValue);
           const color = getScaleColor(scale, value);
@@ -355,6 +403,15 @@ export default function FloatingMapBg() {
 
           return (
             <React.Fragment key={est.id}>
+              {/* Alerta crítico — anel tracejado vermelho ao redor da estação */}
+              {alerts.length > 0 && (
+                <Circle
+                  center={position}
+                  radius={2500}
+                  pathOptions={{ color: "#dc2626", fillColor: "#dc2626", fillOpacity: 0, weight: 2, dashArray: "5 6" }}
+                />
+              )}
+
               {/* Outer glow ring — raio efetivo máximo de 15 km */}
               {isOnline && value != null && (
                 <Circle
@@ -386,7 +443,7 @@ export default function FloatingMapBg() {
               {/* Custom colored station marker */}
               <Marker
                 position={position}
-                icon={makeStationIcon(markerColor, isOnline, est.nome.slice(0, 2).toUpperCase())}
+                icon={makeStationIcon(markerColor, isOnline, est.nome.slice(0, 2).toUpperCase(), alerts.length > 0)}
                 eventHandlers={{ click: () => setSelectedStation({ estacao: est, leituras: getReadingsForStation(est) }) }}
               >
                 <Popup maxWidth={240}>
@@ -399,6 +456,13 @@ export default function FloatingMapBg() {
                         {reading?.gps_fix ? " 🛰️ GPS" : ""}
                       </p>
                     </div>
+
+                    {alerts.length > 0 && (
+                      <div style={{ background: "#fee2e2", border: "1px solid #fecaca", borderRadius: 6, padding: "5px 8px", marginBottom: 8, fontSize: 11, color: "#991b1b", lineHeight: 1.4 }}>
+                        <strong>⚠ Alerta crítico</strong>
+                        {alerts.map(a => <div key={a}>• {a}</div>)}
+                      </div>
+                    )}
 
                     {reading ? (
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", fontSize: 12 }}>

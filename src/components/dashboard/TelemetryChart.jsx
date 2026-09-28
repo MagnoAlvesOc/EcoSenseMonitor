@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import moment from "moment";
+import { useChartAxis } from "@/lib/chartTheme";
 
 const METRIC_CONFIG = {
   temperatura_c: { label: "Temperatura (°C)", color: "#ef4444", unit: "°C" },
@@ -14,6 +15,7 @@ const METRIC_CONFIG = {
 };
 
 export default function TelemetryChart({ data, metrics = ["temperatura_c", "umidade_relativa_perc"], title = "Variação Temporal" }) {
+  const { isMobile, xProps, yProps } = useChartAxis();
   const chartData = (data || [])
     .sort((a, b) => new Date(a.timestamp_recebimento) - new Date(b.timestamp_recebimento))
     .map(d => ({
@@ -34,10 +36,10 @@ export default function TelemetryChart({ data, metrics = ["temperatura_c", "umid
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+            <LineChart data={chartData} margin={{ top: 5, right: 10, left: isMobile ? -4 : -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis dataKey="time" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
+              <XAxis dataKey="time" {...xProps} />
+              <YAxis {...yProps} />
               <Tooltip
                 labelFormatter={(_, payload) => payload?.[0]?.payload?.fullTime || ""}
                 contentStyle={{

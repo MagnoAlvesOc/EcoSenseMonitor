@@ -4,7 +4,7 @@ import {
   CartesianGrid, ReferenceLine,
 } from "recharts";
 import { getTs, safeNum, buildChartSeries } from "@/lib/useExternalIoT";
-import { useChartColors } from "@/lib/chartTheme";
+import { useChartColors, useChartAxis } from "@/lib/chartTheme";
 
 const TIME_FILTERS = [
   { key: "1h", label: "1h", hours: 1 },
@@ -25,6 +25,7 @@ export default function ComparisonChart({ stationData = [], externalData }) {
   const [filter, setFilter] = useState("24h");
   const [metricKey, setMetricKey] = useState("temperatura_c");
   const { series, struct } = useChartColors();
+  const { xProps, yProps } = useChartAxis();
 
   const metric = METRICS.find((m) => m.key === metricKey);
   const extValue = externalData ? safeNum(externalData[metric.extKey]) : null;
@@ -140,16 +141,8 @@ export default function ComparisonChart({ stationData = [], externalData }) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={filteredData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
-              <XAxis
-                dataKey="time"
-                tick={{ fontSize: 10, fill: struct.tick }}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                tick={{ fontSize: 10, fill: struct.tick }}
-                domain={["auto", "auto"]}
-                width={45}
-              />
+              <XAxis dataKey="time" {...xProps} />
+              <YAxis {...yProps} domain={["auto", "auto"]} />
               <Tooltip
                 contentStyle={{
                   background: struct.tooltipBg,

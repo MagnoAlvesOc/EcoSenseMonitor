@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { ResponsiveContainer, LineChart as RLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { LineChart, Thermometer, Droplets } from "lucide-react";
 import { buildChartSeries, safeNum } from "@/lib/useExternalIoT";
-import { useChartColors } from "@/lib/chartTheme";
+import { useChartColors, useChartAxis } from "@/lib/chartTheme";
 
 function statRow(values, dec = 1) {
   const valid = values.filter((v) => v !== null && !isNaN(v));
@@ -18,6 +18,7 @@ function statRow(values, dec = 1) {
 
 export default function TrendPanel({ data = [], isLoading = false }) {
   const { series, struct } = useChartColors();
+  const { isMobile, xProps, yProps } = useChartAxis();
   const chartData = useMemo(
     () => buildChartSeries(data, ["temperatura_c", "umidade_relativa_perc"]),
     [data]
@@ -47,11 +48,11 @@ export default function TrendPanel({ data = [], isLoading = false }) {
       ) : (
         <>
           <ResponsiveContainer width="100%" height={240}>
-            <RLineChart data={chartData} margin={{ top: 5, right: 10, left: -18, bottom: 0 }}>
+            <RLineChart data={chartData} margin={{ top: 5, right: 10, left: isMobile ? -8 : -18, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
-              <XAxis dataKey="time" tick={{ fontSize: 9, fill: struct.tick }} interval="preserveStartEnd" />
-              <YAxis yAxisId="temp" tick={{ fontSize: 9, fill: series.temp }} domain={["auto", "auto"]} />
-              <YAxis yAxisId="umid" orientation="right" domain={[0, 100]} tick={{ fontSize: 9, fill: series.umid }} />
+              <XAxis dataKey="time" {...xProps} />
+              <YAxis yAxisId="temp" {...yProps} domain={["auto", "auto"]} tick={{ ...yProps.tick, fill: series.temp }} />
+              <YAxis yAxisId="umid" orientation="right" {...yProps} domain={[0, 100]} tick={{ ...yProps.tick, fill: series.umid }} />
               <Tooltip
                 contentStyle={{
                   background: struct.tooltipBg,

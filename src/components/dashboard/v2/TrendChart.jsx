@@ -6,7 +6,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { getTs, safeNum, buildChartSeries } from "@/lib/useExternalIoT";
-import { useChartColors } from "@/lib/chartTheme";
+import { useChartColors, useChartAxis } from "@/lib/chartTheme";
 
 const TIME_FILTERS = [
   { key: "1h",  label: "1h",  hours: 1 },
@@ -26,6 +26,7 @@ const SERIES = [
 export default function TrendChart({ data = [], className }) {
   const [filter, setFilter] = React.useState("24h");
   const { series, struct } = useChartColors();
+  const { xProps, yProps } = useChartAxis();
 
   const filteredData = useMemo(() => {
     if (!data.length) return [];
@@ -74,9 +75,9 @@ export default function TrendChart({ data = [], className }) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={filteredData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
-              <XAxis dataKey="time" tick={{ fontSize: 10, fill: struct.tick }} interval="preserveStartEnd" />
-              <YAxis yAxisId="left" tick={{ fontSize: 10, fill: struct.tick }} domain={["auto", "auto"]} width={40} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: struct.tick }} domain={["auto", "auto"]} width={40} />
+              <XAxis dataKey="time" {...xProps} />
+              <YAxis yAxisId="left" {...yProps} domain={["auto", "auto"]} />
+              <YAxis yAxisId="right" orientation="right" {...yProps} domain={["auto", "auto"]} />
               <Tooltip
                 contentStyle={{
                   background: struct.tooltipBg,

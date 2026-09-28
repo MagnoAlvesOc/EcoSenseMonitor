@@ -49,3 +49,42 @@ export function useChartColors() {
     struct: STRUCT_COLORS[isDark ? "dark" : "light"],
   };
 }
+
+// Detecta telas pequenas (mobile) para adaptar os eixos dos gráficos.
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const onChange = () => setIsMobile(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  return isMobile;
+}
+
+// Props compartilhadas dos eixos, adaptadas ao tamanho da tela:
+// no mobile os rótulos ficam maiores e inclinados, com mais folga
+// entre marcas, para que as escalas de tempo e valores não se sobreponham.
+export function useChartAxis() {
+  const isMobile = useIsMobile();
+  const { struct } = useChartColors();
+
+  const tick = { fontSize: isMobile ? 11 : 10, fill: struct.tick };
+  return {
+    isMobile,
+    xProps: isMobile
+      ? {
+          tick: { ...tick, angle: -30, textAnchor: "end" },
+          height: 48,
+          interval: "preserveStartEnd",
+          minTickGap: 14,
+          tickLine: false,
+        }
+      : { tick, interval: "preserveStartEnd", minTickGap: 5, tickLine: false },
+    yProps: { tick, width: isMobile ? 48 : 40, tickLine: false },
+  };
+}

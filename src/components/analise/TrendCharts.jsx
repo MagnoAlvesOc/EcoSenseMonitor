@@ -4,7 +4,7 @@ import {
   CartesianGrid, Legend, ReferenceLine
 } from "recharts";
 import moment from "moment";
-import { useChartColors } from "@/lib/chartTheme";
+import { useChartColors, useChartAxis } from "@/lib/chartTheme";
 
 const CHART_METRICS = [
   { key: "temperatura_c",         label: "Temperatura", unit: "°C",  color: "temp" },
@@ -37,6 +37,7 @@ const CustomTooltip = ({ active, payload, label, unit }) => {
 export default function TrendCharts({ leituras, estacoes, filteredData }) {
   const [selectedStation, setSelectedStation] = useState("all");
   const { series, struct } = useChartColors();
+  const { xProps, yProps } = useChartAxis();
 
   // build per-station time series
   const chartData = React.useMemo(() => {
@@ -92,13 +93,8 @@ export default function TrendCharts({ leituras, estacoes, filteredData }) {
                 <ResponsiveContainer width="100%" height={160}>
                   <LineChart data={chartData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
-                    <XAxis
-                      dataKey="time"
-                      tick={{ fontSize: 9, fill: struct.tick }}
-                      interval="preserveStartEnd"
-                      tickLine={false}
-                    />
-                    <YAxis tick={{ fontSize: 9, fill: struct.tick }} domain={["auto", "auto"]} tickLine={false} />
+                    <XAxis dataKey="time" {...xProps} />
+                    <YAxis {...yProps} domain={["auto", "auto"]} />
                     <Tooltip content={<CustomTooltip unit={metric.unit} />} />
                     <Line
                       type="monotone"
