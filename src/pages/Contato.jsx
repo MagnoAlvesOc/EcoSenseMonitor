@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const CONTACT_EMAIL = "labirpesq@gmail.com";
+const CONTACT_EMAIL = "jose.mpa@discente.ufma.br";
 
 export default function Contato() {
   const [form, setForm] = useState({ nome: "", email: "", mensagem: "" });
