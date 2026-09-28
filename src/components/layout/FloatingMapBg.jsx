@@ -358,7 +358,7 @@ export default function FloatingMapBg() {
               {isOnline && value != null && (
                 <Circle
                   center={position}
-                  radius={15000}
+                  radius={1000}
                   pathOptions={{
                     color: color,
                     fillColor: color,
@@ -372,7 +372,7 @@ export default function FloatingMapBg() {
               {value != null && (
                 <Circle
                   center={position}
-                  radius={8000}
+                  radius={500}
                   pathOptions={{
                     color: color,
                     fillColor: color,
