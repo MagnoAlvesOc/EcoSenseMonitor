@@ -45,7 +45,7 @@ export default function AlertsNotifier() {
 
   const { data: alertas = [] } = useQuery({
     queryKey: ["alertas-notifier"],
-    queryFn: () => base44.entities.Alertas.filter({ lido: false }),
+    queryFn: () => base44.entities.Alertas.list("-created_date", 50),
     refetchInterval: 20000,
   });
 
@@ -81,13 +81,24 @@ export default function AlertsNotifier() {
   // Auto-check leituras against config thresholds
   useEffect(() => {
     const config = configs[0];
-    if (!config || !leituras.length) return;
+    if (!config || !leituras.length || config.notificacoes_ativas === false) return;
 
     const latest = leituras[0];
     const estacao = estacoes.find(e => e.id === latest.estacao_id);
     const key = `${latest.id}`;
     if (seenIds.current.has(key)) return;
     seenIds.current.add(key);
+
+    // Período de silêncio: não repetir o mesmo tipo de alerta da mesma
+    // estação enquanto existir um igual nos últimos 30 minutos.
+    const limite = moment().subtract(30, "minutes");
+    const emSilencio = (tipo) =>
+      alertas.some(
+        (a) =>
+          a.tipo === tipo &&
+          a.estacao_id === latest.estacao_id &&
+          moment(a.created_date).isAfter(limite)
+      );
 
     const checks = [
       { cond: latest.temperatura_c > config.temperatura_max, tipo: "temperatura_alta", msg: `Temperatura alta: ${latest.temperatura_c?.toFixed(1)}°C (limite: ${config.temperatura_max}°C)`, sev: "critico", val: latest.temperatura_c, lim: config.temperatura_max },
@@ -99,7 +110,7 @@ export default function AlertsNotifier() {
     ];
 
     checks.forEach(c => {
-      if (c.cond) {
+      if (c.cond && !emSilencio(c.tipo)) {
         createAlertMutation.mutate({
           tipo: c.tipo,
           mensagem: c.msg,
@@ -112,9 +123,9 @@ export default function AlertsNotifier() {
         });
       }
     });
-  }, [leituras, configs, estacoes]);
+  }, [leituras, configs, estacoes, alertas]);
 
-  const unread = alertas.slice(0, 5); // show max 5
+  const unread = alertas.filter(a => !a.lido).slice(0, 5); // máx. 5 não lidos
 
   if (!unread.length) return null;
 
