@@ -98,8 +98,8 @@ function Legend({ scale, activeMetric }) {
       className="absolute bottom-6 right-4 z-[1000] pointer-events-auto"
       style={{ minWidth: 130 }}
     >
-      <div className="bg-white/90 backdrop-blur-md rounded-xl border border-gray-200 shadow-xl p-3">
-        <p className="text-[10px] font-bold text-gray-600 uppercase tracking-wider mb-2">
+      <div className="bg-background/90 backdrop-blur-md rounded-xl border border-border shadow-xl p-3">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
           {scale.label} ({scale.unit})
         </p>
         <div className="flex items-center gap-1 mb-1">
@@ -112,7 +112,7 @@ function Legend({ scale, activeMetric }) {
             }}
           />
         </div>
-        <div className="flex justify-between text-[9px] text-gray-500">
+        <div className="flex justify-between text-[9px] text-muted-foreground">
           <span>{scale.min}{scale.unit}</span>
           <span>{scale.max}{scale.unit}</span>
         </div>
@@ -125,7 +125,7 @@ function Legend({ scale, activeMetric }) {
 function MetricSelector({ activeMetric, onChange }) {
   return (
     <div className="absolute top-4 right-4 z-[1000] pointer-events-auto">
-      <div className="bg-white/90 backdrop-blur-md rounded-xl border border-gray-200 shadow-xl p-2 flex flex-col gap-1">
+      <div className="bg-background/90 backdrop-blur-md rounded-xl border border-border shadow-xl p-2 flex flex-col gap-1">
         {Object.entries(SCALES).map(([key, s]) => (
           <button
             key={key}
@@ -133,7 +133,7 @@ function MetricSelector({ activeMetric, onChange }) {
             className={`text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-all text-left ${
               activeMetric === key
                 ? "text-white shadow"
-                : "text-gray-600 hover:bg-gray-100"
+                : "text-muted-foreground hover:bg-muted"
             }`}
             style={activeMetric === key ? {
               background: toRgb(s.stops[Math.floor(s.stops.length / 2)]),
@@ -171,12 +171,13 @@ function CoordsPanel({ coords, onClose }) {
       style={{ position: "fixed", bottom: 96, left: "50%", transform: "translateX(-50%)", zIndex: 9999 }}
       onClick={e => e.stopPropagation()}
     >
-      <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200 shadow-2xl px-5 py-3 flex flex-col gap-2 min-w-[280px]">
+      <div className="bg-background/95 backdrop-blur-md rounded-2xl border border-border shadow-2xl px-5 py-3 flex flex-col gap-2 min-w-[280px]">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">📍 Ponto Selecionado</span>
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">📍 Ponto Selecionado</span>
           <button
+            className="text-muted-foreground"
             onPointerDown={e => { e.stopPropagation(); onClose(); }}
-            style={{ cursor: "pointer", fontSize: 20, lineHeight: 1, color: "#9ca3af", background: "none", border: "none", padding: "0 4px" }}
+            style={{ cursor: "pointer", fontSize: 20, lineHeight: 1, background: "none", border: "none", padding: "0 4px" }}
           >×</button>
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -189,7 +190,7 @@ function CoordsPanel({ coords, onClose }) {
             <p className="text-sm font-mono font-bold text-green-700">{coords.lng.toFixed(6)}</p>
           </div>
         </div>
-        <p className="text-[10px] text-gray-400 text-center">
+        <p className="text-[10px] text-muted-foreground text-center">
           Use o painel <strong>Mapa de Estações</strong> para definir a posição com essas coordenadas.
         </p>
       </div>

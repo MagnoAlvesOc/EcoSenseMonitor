@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { getTs, safeNum, buildChartSeries } from "@/lib/useExternalIoT";
+import { useChartColors } from "@/lib/chartTheme";
 
 const TIME_FILTERS = [
   { key: "1h",  label: "1h",  hours: 1 },
@@ -16,14 +17,15 @@ const TIME_FILTERS = [
 ];
 
 const SERIES = [
-  { key: "temperatura_c", name: "Temp °C", color: "#ef4444", yAxisId: "left" },
-  { key: "umidade_relativa_perc", name: "Umid %", color: "#3b82f6", yAxisId: "left" },
-  { key: "pressao_atmosferica_hpa", name: "Press hPa", color: "#8b5cf6", yAxisId: "right" },
-  { key: "nivel_co2", name: "CO₂ ppm", color: "#f59e0b", yAxisId: "right" },
+  { key: "temperatura_c", name: "Temp °C", color: "temp", yAxisId: "left" },
+  { key: "umidade_relativa_perc", name: "Umid %", color: "umid", yAxisId: "left" },
+  { key: "pressao_atmosferica_hpa", name: "Press hPa", color: "press", yAxisId: "right" },
+  { key: "nivel_co2", name: "CO₂ ppm", color: "co2", yAxisId: "right" },
 ];
 
 export default function TrendChart({ data = [], className }) {
   const [filter, setFilter] = React.useState("24h");
+  const { series, struct } = useChartColors();
 
   const filteredData = useMemo(() => {
     if (!data.length) return [];
@@ -71,19 +73,20 @@ export default function TrendChart({ data = [], className }) {
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={filteredData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
-              <XAxis dataKey="time" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} interval="preserveStartEnd" />
-              <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} domain={["auto", "auto"]} width={40} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} domain={["auto", "auto"]} width={40} />
+              <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
+              <XAxis dataKey="time" tick={{ fontSize: 10, fill: struct.tick }} interval="preserveStartEnd" />
+              <YAxis yAxisId="left" tick={{ fontSize: 10, fill: struct.tick }} domain={["auto", "auto"]} width={40} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: struct.tick }} domain={["auto", "auto"]} width={40} />
               <Tooltip
                 contentStyle={{
-                  background: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
+                  background: struct.tooltipBg,
+                  border: `1px solid ${struct.tooltipBorder}`,
                   borderRadius: "8px",
                   fontSize: "11px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  boxShadow: struct.tooltipShadow,
+                  color: struct.tick,
                 }}
-                labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                labelStyle={{ color: struct.tick, fontWeight: 600, marginBottom: 4 }}
               />
               <Legend wrapperStyle={{ fontSize: 10, paddingTop: 8 }} />
               {SERIES.map((s) => (
@@ -93,7 +96,7 @@ export default function TrendChart({ data = [], className }) {
                   type="monotone"
                   dataKey={s.key}
                   name={s.name}
-                  stroke={s.color}
+                  stroke={series[s.color]}
                   strokeWidth={1.5}
                   dot={false}
                   activeDot={{ r: 3 }}

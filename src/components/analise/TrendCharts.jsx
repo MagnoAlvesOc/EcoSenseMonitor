@@ -4,11 +4,12 @@ import {
   CartesianGrid, Legend, ReferenceLine
 } from "recharts";
 import moment from "moment";
+import { useChartColors } from "@/lib/chartTheme";
 
 const CHART_METRICS = [
-  { key: "temperatura_c",         label: "Temperatura", unit: "°C",  color: "#ef4444" },
-  { key: "umidade_relativa_perc", label: "Umidade",     unit: "%",   color: "#3b82f6" },
-  { key: "nivel_co2",             label: "CO₂",         unit: "ppm", color: "#10b981" },
+  { key: "temperatura_c",         label: "Temperatura", unit: "°C",  color: "temp" },
+  { key: "umidade_relativa_perc", label: "Umidade",     unit: "%",   color: "umid" },
+  { key: "nivel_co2",             label: "CO₂",         unit: "ppm", color: "extra" },
 ];
 
 function GlassCard({ children, className = "" }) {
@@ -35,6 +36,7 @@ const CustomTooltip = ({ active, payload, label, unit }) => {
 
 export default function TrendCharts({ leituras, estacoes, filteredData }) {
   const [selectedStation, setSelectedStation] = useState("all");
+  const { series, struct } = useChartColors();
 
   // build per-station time series
   const chartData = React.useMemo(() => {
@@ -89,23 +91,23 @@ export default function TrendCharts({ leituras, estacoes, filteredData }) {
                 </p>
                 <ResponsiveContainer width="100%" height={160}>
                   <LineChart data={chartData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
                     <XAxis
                       dataKey="time"
-                      tick={{ fontSize: 9, fill: "#9ca3af" }}
+                      tick={{ fontSize: 9, fill: struct.tick }}
                       interval="preserveStartEnd"
                       tickLine={false}
                     />
-                    <YAxis tick={{ fontSize: 9, fill: "#9ca3af" }} domain={["auto", "auto"]} tickLine={false} />
+                    <YAxis tick={{ fontSize: 9, fill: struct.tick }} domain={["auto", "auto"]} tickLine={false} />
                     <Tooltip content={<CustomTooltip unit={metric.unit} />} />
                     <Line
                       type="monotone"
                       dataKey={metric.key}
                       name={metric.label}
-                      stroke={metric.color}
+                      stroke={series[metric.color]}
                       strokeWidth={2}
                       dot={false}
-                      activeDot={{ r: 4, fill: metric.color }}
+                      activeDot={{ r: 4, fill: series[metric.color] }}
                     />
                   </LineChart>
                 </ResponsiveContainer>

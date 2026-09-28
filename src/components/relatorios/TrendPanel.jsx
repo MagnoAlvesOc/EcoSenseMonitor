@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { ResponsiveContainer, LineChart as RLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { LineChart, Thermometer, Droplets } from "lucide-react";
 import { buildChartSeries, safeNum } from "@/lib/useExternalIoT";
+import { useChartColors } from "@/lib/chartTheme";
 
 function statRow(values, dec = 1) {
   const valid = values.filter((v) => v !== null && !isNaN(v));
@@ -16,6 +17,7 @@ function statRow(values, dec = 1) {
 }
 
 export default function TrendPanel({ data = [], isLoading = false }) {
+  const { series, struct } = useChartColors();
   const chartData = useMemo(
     () => buildChartSeries(data, ["temperatura_c", "umidade_relativa_perc"]),
     [data]
@@ -46,16 +48,24 @@ export default function TrendPanel({ data = [], isLoading = false }) {
         <>
           <ResponsiveContainer width="100%" height={240}>
             <RLineChart data={chartData} margin={{ top: 5, right: 10, left: -18, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
-              <XAxis dataKey="time" tick={{ fontSize: 9, fill: "#9ca3af" }} interval="preserveStartEnd" />
-              <YAxis yAxisId="temp" tick={{ fontSize: 9, fill: "#ef4444" }} domain={["auto", "auto"]} />
-              <YAxis yAxisId="umid" orientation="right" domain={[0, 100]} tick={{ fontSize: 9, fill: "#3b82f6" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
+              <XAxis dataKey="time" tick={{ fontSize: 9, fill: struct.tick }} interval="preserveStartEnd" />
+              <YAxis yAxisId="temp" tick={{ fontSize: 9, fill: series.temp }} domain={["auto", "auto"]} />
+              <YAxis yAxisId="umid" orientation="right" domain={[0, 100]} tick={{ fontSize: 9, fill: series.umid }} />
               <Tooltip
-                contentStyle={{ background: "rgba(255,255,255,0.97)", border: "1px solid #e5e7eb", borderRadius: 10, fontSize: 11 }}
+                contentStyle={{
+                  background: struct.tooltipBg,
+                  border: `1px solid ${struct.tooltipBorder}`,
+                  borderRadius: 10,
+                  fontSize: 11,
+                  boxShadow: struct.tooltipShadow,
+                  color: struct.tick,
+                }}
+                labelStyle={{ color: struct.tick }}
               />
               <Legend wrapperStyle={{ fontSize: 10 }} />
-              <Line yAxisId="temp" type="monotone" dataKey="temperatura_c" name="Temperatura (°C)" stroke="#ef4444" strokeWidth={2} dot={false} connectNulls={false} />
-              <Line yAxisId="umid" type="monotone" dataKey="umidade_relativa_perc" name="Umidade (%)" stroke="#3b82f6" strokeWidth={2} dot={false} connectNulls={false} />
+              <Line yAxisId="temp" type="monotone" dataKey="temperatura_c" name="Temperatura (°C)" stroke={series.temp} strokeWidth={2} dot={false} connectNulls={false} />
+              <Line yAxisId="umid" type="monotone" dataKey="umidade_relativa_perc" name="Umidade (%)" stroke={series.umid} strokeWidth={2} dot={false} connectNulls={false} />
             </RLineChart>
           </ResponsiveContainer>
 

@@ -4,6 +4,7 @@ import {
   CartesianGrid, ReferenceLine,
 } from "recharts";
 import { getTs, safeNum, buildChartSeries } from "@/lib/useExternalIoT";
+import { useChartColors } from "@/lib/chartTheme";
 
 const TIME_FILTERS = [
   { key: "1h", label: "1h", hours: 1 },
@@ -14,15 +15,16 @@ const TIME_FILTERS = [
 
 // Métricas comparáveis entre a estação e o dado externo de São Luís.
 const METRICS = [
-  { key: "temperatura_c", extKey: "temperatura_c", name: "Temperatura", unit: "°C", color: "#ef4444", tol: 2 },
-  { key: "umidade_relativa_perc", extKey: "umidade_relativa_perc", name: "Umidade", unit: "%", color: "#3b82f6", tol: 5 },
-  { key: "pressao_atmosferica_hpa", extKey: "pressao_atmosferica_hpa", name: "Pressão", unit: "hPa", color: "#8b5cf6", tol: 5 },
-  { key: "nivel_co2", extKey: "co2_ppm", name: "CO₂", unit: "ppm", color: "#f59e0b", tol: 50 },
+  { key: "temperatura_c", extKey: "temperatura_c", name: "Temperatura", unit: "°C", color: "temp", tol: 2 },
+  { key: "umidade_relativa_perc", extKey: "umidade_relativa_perc", name: "Umidade", unit: "%", color: "umid", tol: 5 },
+  { key: "pressao_atmosferica_hpa", extKey: "pressao_atmosferica_hpa", name: "Pressão", unit: "hPa", color: "press", tol: 5 },
+  { key: "nivel_co2", extKey: "co2_ppm", name: "CO₂", unit: "ppm", color: "co2", tol: 50 },
 ];
 
 export default function ComparisonChart({ stationData = [], externalData }) {
   const [filter, setFilter] = useState("24h");
   const [metricKey, setMetricKey] = useState("temperatura_c");
+  const { series, struct } = useChartColors();
 
   const metric = METRICS.find((m) => m.key === metricKey);
   const extValue = externalData ? safeNum(externalData[metric.extKey]) : null;
@@ -83,11 +85,11 @@ export default function ComparisonChart({ stationData = [], externalData }) {
                 ? "text-white border-transparent shadow-sm"
                 : "text-muted-foreground border-border hover:text-foreground"
             }`}
-            style={metricKey === m.key ? { background: m.color } : {}}
+            style={metricKey === m.key ? { background: series[m.color] } : {}}
           >
             <span
               className="w-2 h-2 rounded-full"
-              style={{ background: metricKey === m.key ? "#fff" : m.color }}
+              style={{ background: metricKey === m.key ? "#fff" : series[m.color] }}
             />
             {m.name} ({m.unit})
           </button>
@@ -99,7 +101,7 @@ export default function ComparisonChart({ stationData = [], externalData }) {
         <div className="grid grid-cols-3 gap-2 mb-3">
           <div className="bg-muted/40 rounded-lg px-3 py-2">
             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Média Estação</p>
-            <p className="text-sm font-bold" style={{ color: metric.color }}>
+            <p className="text-sm font-bold" style={{ color: series[metric.color] }}>
               {stats.mean.toFixed(1)} {metric.unit}
             </p>
           </div>
@@ -137,37 +139,38 @@ export default function ComparisonChart({ stationData = [], externalData }) {
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={filteredData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
+              <CartesianGrid strokeDasharray="3 3" stroke={struct.grid} />
               <XAxis
                 dataKey="time"
-                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                tick={{ fontSize: 10, fill: struct.tick }}
                 interval="preserveStartEnd"
               />
               <YAxis
-                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                tick={{ fontSize: 10, fill: struct.tick }}
                 domain={["auto", "auto"]}
                 width={45}
               />
               <Tooltip
                 contentStyle={{
-                  background: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
+                  background: struct.tooltipBg,
+                  border: `1px solid ${struct.tooltipBorder}`,
                   borderRadius: "8px",
                   fontSize: "11px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  boxShadow: struct.tooltipShadow,
+                  color: struct.tick,
                 }}
-                labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                labelStyle={{ color: struct.tick, fontWeight: 600, marginBottom: 4 }}
                 formatter={(v) => (v != null ? `${Number(v).toFixed(1)} ${metric.unit}` : "--")}
               />
               {extValue != null && (
                 <ReferenceLine
                   y={extValue}
-                  stroke={metric.color}
+                  stroke={series[metric.color]}
                   strokeDasharray="6 4"
                   strokeWidth={1.5}
                   label={{
                     value: `Ext. São Luís: ${extValue.toFixed(1)}`,
-                    fill: metric.color,
+                    fill: series[metric.color],
                     fontSize: 10,
                     position: "insideTopRight",
                   }}
@@ -177,7 +180,7 @@ export default function ComparisonChart({ stationData = [], externalData }) {
                 type="monotone"
                 dataKey={metric.key}
                 name="Estação"
-                stroke={metric.color}
+                stroke={series[metric.color]}
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 3 }}
