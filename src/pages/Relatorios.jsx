@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, FileSpreadsheet } from "lucide-react";
+import { Download, FileText, FileSpreadsheet, FileDown } from "lucide-react";
+import { createPdfReport } from "@/lib/exportPdf";
 import DateRangeSelector from "../components/shared/DateRangeSelector";
 import TrendPanel from "@/components/relatorios/TrendPanel";
 import moment from "moment";
@@ -97,6 +98,48 @@ export default function Relatorios() {
     URL.revokeObjectURL(url);
   };
 
+  const exportPDF = () => {
+    if (!filteredData.length) return;
+    const stat = (key) => {
+      const vals = filteredData.map(r => safeNum(r[key])).filter(v => v !== null);
+      if (!vals.length) return null;
+      return {
+        min: Math.min(...vals),
+        max: Math.max(...vals),
+        avg: vals.reduce((a, b) => a + b, 0) / vals.length,
+      };
+    };
+    const t = stat("temperatura_c");
+    const u = stat("umidade_relativa_perc");
+
+    const doc = createPdfReport({
+      title: "Relatório EcoSense IoT — Histórico de Leituras",
+      meta: [
+        `Período: ${moment(startDate).format("DD/MM/YYYY HH:mm")} a ${moment(endDate).format("DD/MM/YYYY HH:mm")}`,
+        `Registros: ${filteredData.length} — Status: ${isOnline ? "ONLINE" : "OFFLINE"} — Gerado em ${moment().format("DD/MM/YYYY HH:mm")}`,
+        t ? `Temperatura: mín ${t.min.toFixed(1)}°C | média ${t.avg.toFixed(1)}°C | máx ${t.max.toFixed(1)}°C` : null,
+        u ? `Umidade: mín ${u.min.toFixed(1)}% | média ${u.avg.toFixed(1)}% | máx ${u.max.toFixed(1)}%` : null,
+      ].filter(Boolean),
+    });
+
+    doc.drawTable(
+      [
+        { header: "Data/Hora", width: 36 }, { header: "Estação", width: 42 },
+        { header: "Temp °C", width: 20 }, { header: "Umid %", width: 20 },
+        { header: "Press hPa", width: 24 }, { header: "Alt m", width: 16 },
+        { header: "CO2", width: 16 }, { header: "Bat V", width: 16 }, { header: "RSSI", width: 15 },
+      ],
+      filteredData.map(r => [
+        moment(getTs(r)).format("DD/MM HH:mm:ss"),
+        (r.estacao_nome || r.estacao_id || "-").slice(0, 22),
+        fmt(r.temperatura_c, 1), fmt(r.umidade_relativa_perc, 1),
+        fmt(r.pressao_atmosferica_hpa, 1), fmt(r.altitude_m, 1),
+        fmt(r.nivel_co2, 0), fmt(r.status_bateria_v, 2), fmt(r.rssi, 0),
+      ])
+    );
+    doc.save(`historico_${moment().format("YYYYMMDD_HHmm")}.pdf`);
+  };
+
   return (
     <div className="space-y-4 max-w-5xl pointer-events-auto">
       {/* Header */}
@@ -114,6 +157,9 @@ export default function Relatorios() {
           </Button>
           <Button variant="outline" onClick={exportTXT} size="sm" disabled={!filteredData.length}>
             <FileText className="w-4 h-4 mr-1" /> TXT
+          </Button>
+          <Button variant="outline" onClick={exportPDF} size="sm" disabled={!filteredData.length} className="border-red-500 text-red-600 hover:bg-red-500/10">
+            <FileDown className="w-4 h-4 mr-1" /> PDF
           </Button>
         </div>
       </GlassCard>

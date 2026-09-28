@@ -2,7 +2,9 @@ import React, { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import DateRangeSelector from "../components/shared/DateRangeSelector";
 import moment from "moment";
-import { BarChart3, TrendingUp, LineChart, AlertTriangle } from "lucide-react";
+import { BarChart3, TrendingUp, LineChart, AlertTriangle, FileDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { createPdfReport } from "@/lib/exportPdf";
 import {
   ResponsiveContainer, LineChart as RLineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, Legend, ReferenceArea
@@ -100,6 +102,29 @@ export default function AnaliseEstatistica() {
 
   const fmtStat = (v, dec = 2) => v !== null ? Number(v).toFixed(dec) : "—";
 
+  const exportPDF = () => {
+    if (!filteredData.length) return;
+    const doc = createPdfReport({
+      title: "Análise Estatística — EcoSense IoT",
+      meta: [
+        `Período: ${moment(startDate).format("DD/MM/YYYY HH:mm")} a ${moment(endDate).format("DD/MM/YYYY HH:mm")}`,
+        `Registros: ${filteredData.length} — Lacunas de coleta: ${gaps.length} — Gerado em ${moment().format("DD/MM/YYYY HH:mm")}`,
+      ],
+    });
+    doc.drawTable(
+      [
+        { header: "Variável", width: 52 }, { header: "N", width: 20 }, { header: "Média", width: 28 },
+        { header: "Mediana", width: 28 }, { header: "Desvio Padrão", width: 34 },
+        { header: "Mínimo", width: 26 }, { header: "Máximo", width: 26 },
+      ],
+      stats.map(s => [
+        `${s.label}${s.unit ? ` (${s.unit})` : ""}`,
+        s.count, fmtStat(s.media), fmtStat(s.mediana), fmtStat(s.desvio, 3), fmtStat(s.min), fmtStat(s.max),
+      ])
+    );
+    doc.save(`analise_${moment().format("YYYYMMDD_HHmm")}.pdf`);
+  };
+
   return (
     <div className="space-y-4 max-w-5xl pointer-events-auto">
       <GlassCard className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -107,11 +132,16 @@ export default function AnaliseEstatistica() {
           <h1 className="text-xl font-bold">Análise Estatística</h1>
           <p className="text-xs text-muted-foreground">Estatísticas calculadas sobre dados reais do período</p>
         </div>
-        <DateRangeSelector
-          startDate={startDate} endDate={endDate}
-          onStartChange={setStartDate} onEndChange={setEndDate}
-          activePreset={activePreset} onPresetChange={handlePreset}
-        />
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <DateRangeSelector
+            startDate={startDate} endDate={endDate}
+            onStartChange={setStartDate} onEndChange={setEndDate}
+            activePreset={activePreset} onPresetChange={handlePreset}
+          />
+          <Button variant="outline" onClick={exportPDF} size="sm" disabled={!filteredData.length} className="border-red-500 text-red-600 hover:bg-red-500/10">
+            <FileDown className="w-4 h-4 mr-1" /> PDF
+          </Button>
+        </div>
       </GlassCard>
 
       {/* Operational status */}
