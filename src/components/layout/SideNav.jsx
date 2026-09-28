@@ -38,7 +38,7 @@ export default function SideNav() {
         md:inset-x-auto md:bottom-auto md:left-0 md:top-0 md:h-full md:pb-0 md:w-[170px] md:border-t-0 md:border-r md:flex-col"
     >
       {/* Logo — apenas desktop */}
-      <div className="hidden md:flex items-center gap-3 px-3 py-4 border-b border-border/40">
+      <div className="hidden md:flex items-center gap-3 px-2 py-4 border-b border-border/40">
         <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
           <Radio className="w-4 h-4 text-primary-foreground" />
         </div>
@@ -48,11 +48,11 @@ export default function SideNav() {
       </div>
 
       {/* Navegação — faixa horizontal rolável no celular, coluna no desktop */}
-      <nav className="flex-1 flex items-center gap-0.5 px-1 overflow-x-auto touch-pan-x md:py-3 md:overflow-x-hidden md:flex-col md:gap-1 md:px-2 md:overflow-hidden">
+      <nav className="flex-1 flex items-center gap-0.5 px-1 overflow-x-auto touch-pan-x md:py-3 md:overflow-x-hidden md:flex-col md:items-stretch md:gap-1 md:px-2 md:overflow-hidden">
         {navItems.map(item => {
           const isActive = location.pathname === item.path;
           return (
-            <Link key={item.path} to={item.path} className="flex-shrink-0">
+            <Link key={item.path} to={item.path} className="flex-shrink-0 md:w-full">
               <div className={`relative flex items-center justify-center w-11 h-11 md:w-full md:h-auto md:justify-start md:gap-3 md:px-2 md:py-2.5 rounded-xl transition-all duration-200 cursor-pointer ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow"
