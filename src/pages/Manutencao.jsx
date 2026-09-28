@@ -14,7 +14,7 @@ export default function Manutencao() {
       </div>
 
       <Tabs defaultValue="custos">
-        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto md:w-auto md:justify-center">
+        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto touch-pan-x md:w-auto md:justify-center">
           <TabsTrigger value="custos" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
             <DollarSign className="w-3.5 h-3.5" /> Custos
           </TabsTrigger>

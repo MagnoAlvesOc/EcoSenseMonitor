@@ -50,7 +50,7 @@ export default function SideNav() {
       </div>
 
       {/* Navegação — faixa horizontal rolável no celular, coluna no desktop */}
-      <nav className="flex-1 flex items-center gap-0.5 px-1 overflow-x-auto md:py-3 md:flex-col md:gap-1 md:px-2 md:overflow-hidden">
+      <nav className="flex-1 flex items-center gap-0.5 px-1 overflow-x-auto touch-pan-x md:py-3 md:overflow-x-hidden md:flex-col md:gap-1 md:px-2 md:overflow-hidden">
         {navItems.map(item => {
           const isActive = location.pathname === item.path;
           return (

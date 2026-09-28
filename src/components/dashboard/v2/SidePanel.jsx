@@ -12,7 +12,7 @@ export default function SidePanel({ cards, onlineLoading }) {
         </div>
 
         {/* Cartões — faixa horizontal rolável no celular, coluna no desktop */}
-        <div className="p-2 flex gap-1.5 overflow-x-auto md:overflow-hidden md:flex-1 md:flex-col md:justify-between md:gap-1.5">
+        <div className="p-2 flex gap-1.5 overflow-x-auto touch-pan-x md:overflow-hidden md:flex-1 md:flex-col md:justify-between md:gap-1.5">
           {cards.map((c, i) => (
             <div key={i} className="flex-shrink-0 w-[150px] md:w-full">
               <EnvMetricCard {...c} loading={onlineLoading && c.source === "online" && c.value == null} />

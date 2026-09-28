@@ -15,7 +15,7 @@ export default function Integracoes() {
       </div>
 
       <Tabs defaultValue="temporeal">
-        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto md:w-auto md:justify-center">
+        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto touch-pan-x md:w-auto md:justify-center">
           <TabsTrigger value="temporeal" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
             <Zap className="w-3.5 h-3.5" /> Tempo Real
           </TabsTrigger>
