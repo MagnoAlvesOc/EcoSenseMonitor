@@ -7,7 +7,7 @@ import {
   ResponsiveContainer, LineChart as RLineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, Legend, ReferenceArea
 } from "recharts";
-import { useExternalIoT, filterByRange, safeNum, fmt, getTs, buildChartSeries, detectGaps } from "@/lib/useExternalIoT";
+import { useExternalIoT, filterByRange, safeNum, fmt, getTs, buildChartSeries, detectGaps, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
 
 function GlassCard({ children, className = "" }) {
   return (
@@ -33,6 +33,9 @@ const METRICS = [
   { key: "umidade_relativa_perc", label: "Umidade", unit: "%", color: "#3b82f6" },
   { key: "pressao_atmosferica_hpa", label: "Pressão", unit: "hPa", color: "#8b5cf6" },
   { key: "altitude_m", label: "Altitude", unit: "m", color: "#10b981" },
+  { key: "indice_uv", label: "Índice UV", unit: "", color: "#f59e0b" },
+  { key: "nivel_co2", label: "CO₂", unit: "ppm", color: "#64748b" },
+  { key: "status_bateria_v", label: "Bateria", unit: "V", color: "#84cc16" },
 ];
 
 const CHART_METRICS = [
@@ -42,9 +45,9 @@ const CHART_METRICS = [
 ];
 
 export default function AnaliseEstatistica() {
-  const [activePreset, setActivePreset] = useState("24h");
-  const [startDate, setStartDate] = useState(moment().subtract(24, "hours").format("YYYY-MM-DDTHH:mm"));
-  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DDTHH:mm"));
+  const [activePreset, setActivePreset] = useState("Tudo");
+  const [startDate, setStartDate] = useState("2000-01-01T00:00");
+  const [endDate, setEndDate] = useState(moment().add(1, "day").format("YYYY-MM-DDTHH:mm"));
 
   const { data: allData = [], isLoading } = useExternalIoT();
 
@@ -52,7 +55,7 @@ export default function AnaliseEstatistica() {
 
   const latest = allData[0];
   const latestTs = latest ? getTs(latest) : null;
-  const isOnline = latestTs ? (Date.now() - latestTs) / 1000 < 90 : false;
+  const isOnline = latestTs ? (Date.now() - latestTs) / 1000 < ONLINE_THRESHOLD_S : false;
 
   const gaps = useMemo(() => detectGaps(filteredData, 2), [filteredData]);
 
@@ -85,6 +88,12 @@ export default function AnaliseEstatistica() {
 
   const handlePreset = (label, hours) => {
     setActivePreset(label);
+    if (hours === 0) {
+      // "Tudo": exibe todos os registros já existentes na tabela, mesmo antigos
+      setStartDate("2000-01-01T00:00");
+      setEndDate(moment().add(1, "day").format("YYYY-MM-DDTHH:mm"));
+      return;
+    }
     setStartDate(moment().subtract(hours, "hours").format("YYYY-MM-DDTHH:mm"));
     setEndDate(moment().format("YYYY-MM-DDTHH:mm"));
   };

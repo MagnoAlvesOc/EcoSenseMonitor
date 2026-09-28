@@ -9,6 +9,7 @@ const PRESETS = [
   { label: "24h", hours: 24 },
   { label: "7d", hours: 168 },
   { label: "30d", hours: 720 },
+  { label: "Tudo", hours: 0 },
 ];
 
 export default function DateRangeSelector({ startDate, endDate, onStartChange, onEndChange, activePreset, onPresetChange }) {

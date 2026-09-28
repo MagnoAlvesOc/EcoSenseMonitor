@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Download, FileText, FileSpreadsheet } from "lucide-react";
 import DateRangeSelector from "../components/shared/DateRangeSelector";
 import moment from "moment";
-import { useExternalIoT, filterByRange, safeNum, fmt, getTs } from "@/lib/useExternalIoT";
+import { useExternalIoT, filterByRange, safeNum, fmt, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
 import * as XLSX from "xlsx";
 
 function GlassCard({ children, className = "" }) {
@@ -16,31 +16,37 @@ function GlassCard({ children, className = "" }) {
 }
 
 export default function Relatorios() {
-  const [activePreset, setActivePreset] = useState("24h");
-  const [startDate, setStartDate] = useState(moment().subtract(24, "hours").format("YYYY-MM-DDTHH:mm"));
-  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DDTHH:mm"));
+  const [activePreset, setActivePreset] = useState("Tudo");
+  const [startDate, setStartDate] = useState("2000-01-01T00:00");
+  const [endDate, setEndDate] = useState(moment().add(1, "day").format("YYYY-MM-DDTHH:mm"));
 
   const { data: allData = [], isLoading } = useExternalIoT();
 
   const latest = allData[0];
   const latestTs = latest ? getTs(latest) : null;
   const secsSince = latestTs ? (Date.now() - latestTs) / 1000 : null;
-  const isOnline = secsSince !== null && secsSince < 90;
+  const isOnline = secsSince !== null && secsSince < ONLINE_THRESHOLD_S;
 
   const filteredData = useMemo(() => filterByRange(allData, startDate, endDate), [allData, startDate, endDate]);
 
   const handlePreset = (label, hours) => {
     setActivePreset(label);
+    if (hours === 0) {
+      // "Tudo": exibe todos os registros já existentes na tabela, mesmo antigos
+      setStartDate("2000-01-01T00:00");
+      setEndDate(moment().add(1, "day").format("YYYY-MM-DDTHH:mm"));
+      return;
+    }
     setStartDate(moment().subtract(hours, "hours").format("YYYY-MM-DDTHH:mm"));
     setEndDate(moment().format("YYYY-MM-DDTHH:mm"));
   };
 
   const exportCSV = () => {
     if (!filteredData.length) return;
-    const headers = "Data/Hora,Estação,Temperatura(°C),Umidade(%),Pressão(hPa),Altitude(m),UV,RSSI(dBm),IP\n";
+    const headers = "Data/Hora,Estação,Temperatura(°C),Umidade(%),Pressão(hPa),Altitude(m),UV,CO2(ppm),Bateria(V),RSSI(dBm),Latitude,Longitude,GPS Fix,Local de Coleta,IP\n";
     const rows = filteredData.map(r => {
       const ts = moment(getTs(r)).format("YYYY-MM-DD HH:mm:ss");
-      return `${ts},${r.estacao_id || ""},${safeNum(r.temperatura_c) ?? ""},${safeNum(r.umidade_relativa_perc) ?? ""},${safeNum(r.pressao_atmosferica_hpa) ?? ""},${safeNum(r.altitude_m) ?? ""},${safeNum(r.indice_uv) ?? ""},${safeNum(r.rssi) ?? ""},${r.ip_local_estacao || ""}`;
+      return `${ts},${r.estacao_id || ""},${safeNum(r.temperatura_c) ?? ""},${safeNum(r.umidade_relativa_perc) ?? ""},${safeNum(r.pressao_atmosferica_hpa) ?? ""},${safeNum(r.altitude_m) ?? ""},${safeNum(r.indice_uv) ?? ""},${safeNum(r.nivel_co2) ?? ""},${safeNum(r.status_bateria_v) ?? ""},${safeNum(r.rssi) ?? ""},${safeNum(r.latitude) ?? ""},${safeNum(r.longitude) ?? ""},${r.gps_fix ? "sim" : "não"},${r.local_coleta || ""},${r.ip_local_estacao || ""}`;
     }).join("\n");
     const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -64,6 +70,10 @@ export default function Relatorios() {
       "CO2 (ppm)": safeNum(r.nivel_co2) ?? "",
       "Bateria (V)": safeNum(r.status_bateria_v) ?? "",
       "RSSI (dBm)": safeNum(r.rssi) ?? "",
+      "Latitude": safeNum(r.latitude) ?? "",
+      "Longitude": safeNum(r.longitude) ?? "",
+      "GPS Fix": r.gps_fix ? "sim" : "não",
+      "Local de Coleta": r.local_coleta || "",
       "IP": r.ip_local_estacao || "",
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
@@ -163,6 +173,10 @@ export default function Relatorios() {
                 <TableHead>Umid (%)</TableHead>
                 <TableHead>Pressão (hPa)</TableHead>
                 <TableHead>Alt (m)</TableHead>
+                <TableHead>UV</TableHead>
+                <TableHead>CO₂</TableHead>
+                <TableHead>Bat (V)</TableHead>
+                <TableHead>GPS</TableHead>
                 <TableHead>RSSI</TableHead>
               </TableRow>
             </TableHeader>
@@ -170,14 +184,14 @@ export default function Relatorios() {
               {isLoading ? (
                 Array(5).fill(0).map((_, i) => (
                   <TableRow key={i}>
-                    {Array(7).fill(0).map((_, j) => (
+                    {Array(11).fill(0).map((_, j) => (
                       <TableCell key={j}><div className="h-4 bg-muted animate-pulse rounded w-16" /></TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : filteredData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
+                  <TableCell colSpan={11} className="text-center text-muted-foreground py-12">
                     Sem dados no período selecionado
                   </TableCell>
                 </TableRow>
@@ -190,6 +204,14 @@ export default function Relatorios() {
                     <TableCell>{fmt(r.umidade_relativa_perc)}</TableCell>
                     <TableCell>{fmt(r.pressao_atmosferica_hpa, 2)}</TableCell>
                     <TableCell>{fmt(r.altitude_m, 1)}</TableCell>
+                    <TableCell>{fmt(r.indice_uv, 1)}</TableCell>
+                    <TableCell>{fmt(r.nivel_co2, 0)}</TableCell>
+                    <TableCell>{fmt(r.status_bateria_v, 2)}</TableCell>
+                    <TableCell className="text-xs font-mono">
+                      {safeNum(r.latitude) !== null && safeNum(r.longitude) !== null
+                        ? `${safeNum(r.latitude).toFixed(4)}, ${safeNum(r.longitude).toFixed(4)}${r.gps_fix ? " 🛰️" : ""}`
+                        : "—"}
+                    </TableCell>
                     <TableCell className={safeNum(r.rssi) !== null && safeNum(r.rssi) < -70 ? "text-amber-500 font-semibold" : ""}>{fmt(r.rssi, 0)}</TableCell>
                   </TableRow>
                 ))
