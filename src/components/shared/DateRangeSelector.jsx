@@ -14,14 +14,14 @@ const PRESETS = [
 
 export default function DateRangeSelector({ startDate, endDate, onStartChange, onEndChange, activePreset, onPresetChange }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="flex gap-1 p-1 bg-muted rounded-lg">
+    <div className="flex flex-col md:flex-row md:items-center gap-2">
+      <div className="flex flex-wrap gap-1 p-1 bg-muted rounded-lg">
         {PRESETS.map(p => (
           <Button
             key={p.label}
             variant={activePreset === p.label ? "default" : "ghost"}
             size="sm"
-            className="h-7 px-3 text-xs"
+            className="h-8 px-3 text-xs"
             onClick={() => onPresetChange(p.label, p.hours)}
           >
             {p.label}
@@ -29,19 +29,19 @@ export default function DateRangeSelector({ startDate, endDate, onStartChange, o
         ))}
       </div>
       <div className="flex items-center gap-2 text-sm">
-        <Calendar className="w-4 h-4 text-muted-foreground" />
+        <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
         <Input
           type="datetime-local"
           value={startDate}
           onChange={e => onStartChange(e.target.value)}
-          className="h-8 text-xs w-auto"
+          className="h-8 text-xs flex-1 min-w-0"
         />
         <span className="text-muted-foreground">—</span>
         <Input
           type="datetime-local"
           value={endDate}
           onChange={e => onEndChange(e.target.value)}
-          className="h-8 text-xs w-auto"
+          className="h-8 text-xs flex-1 min-w-0"
         />
       </div>
     </div>
