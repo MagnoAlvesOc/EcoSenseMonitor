@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useExternalIoT, safeNum, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
 import {
-  Thermometer, Droplets, Gauge, Cloud, Mountain, Signal, Radio,
+  Thermometer, Droplets, Gauge, Cloud, Mountain, Signal, Radio, Satellite,
   Wifi, WifiOff, Activity, ShieldCheck, Clock, Zap, CloudRain,
   ChevronLeft, ChevronRight, ChevronUp, ChevronDown, BarChart3, X,
 } from "lucide-react";
@@ -57,6 +57,12 @@ function getRssiStatus(v) {
 }
 function getAltitudeStatus(v) {
   if (v == null) return "offline";
+  return "normal";
+}
+function getSatellitesStatus(v) {
+  if (v == null) return "offline";
+  if (v < 4) return "critico";
+  if (v < 6) return "atencao";
   return "normal";
 }
 
@@ -375,6 +381,7 @@ export default function Dashboard() {
     { icon: Gauge, label: "Pressão", color: "#8b5cf6", unit: "hPa", value: latest ? safeNum(latest.pressao_atmosferica_hpa)?.toFixed(0) : null, status: getPressureStatus(safeNum(latest?.pressao_atmosferica_hpa)), delta: delta(safeNum(latest?.pressao_atmosferica_hpa), safeNum(prev?.pressao_atmosferica_hpa)), sparkData, sparkKey: "press" },
     { icon: Mountain, label: "Altitude", color: "#f59e0b", unit: "m", value: latest ? safeNum(latest.altitude_m)?.toFixed(1) : null, status: getAltitudeStatus(safeNum(latest?.altitude_m)), delta: delta(safeNum(latest?.altitude_m), safeNum(prev?.altitude_m)), sparkData, sparkKey: "alt" },
     { icon: Signal, label: "Sinal Wi-Fi", color: "#10b981", unit: "dBm", value: latest ? safeNum(latest.rssi)?.toFixed(0) : null, status: getRssiStatus(safeNum(latest?.rssi)), delta: delta(safeNum(latest?.rssi), safeNum(prev?.rssi)), sparkData, sparkKey: "rssi" },
+    { icon: Satellite, label: "Satélites GPS", color: "#0ea5e9", unit: "sat", value: latest ? safeNum(latest.satellites)?.toFixed(0) : null, status: getSatellitesStatus(safeNum(latest?.satellites)), delta: delta(safeNum(latest?.satellites), safeNum(prev?.satellites)) },
   ];
 
   // ── Environmental cards (rain chance from station + gases/precip online) ─
