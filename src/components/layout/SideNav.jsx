@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Map, FileText, BarChart3, Settings,
-  Activity, Sun, Moon, Radio, Wrench, Globe, Download, GitCompareArrows
+  Activity, Sun, Moon, Radio, Globe, GitCompareArrows
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { toggleTheme } from "@/lib/theme";
 
 const navItems = [
   { path: "/",             icon: LayoutDashboard, label: "Dashboard" },
@@ -14,10 +15,8 @@ const navItems = [
   { path: "/analise",      icon: BarChart3,         label: "Análise" },
   { path: "/comparacao",   icon: GitCompareArrows,  label: "Comparação" },
   { path: "/logs",         icon: Activity,        label: "Logs" },
-  { path: "/manutencao",   icon: Wrench,          label: "Manutenção" },
   { path: "/integracoes",  icon: Globe,           label: "Integrações" },
   { path: "/configuracoes",icon: Settings,        label: "Config" },
-  { path: "/relatorio-pdf", icon: Download,        label: "PDF" },
 ];
 
 export default function SideNav() {
@@ -30,9 +29,8 @@ export default function SideNav() {
     refetchInterval: 30000,
   });
 
-  const toggleTheme = () => {
-    document.documentElement.classList.toggle("dark");
-    setDarkMode(p => !p);
+  const handleToggleTheme = () => {
+    setDarkMode(toggleTheme() === "dark");
   };
 
   return (
@@ -77,7 +75,7 @@ export default function SideNav() {
       {/* Footer */}
       <div className="px-2 pb-3 flex flex-col gap-1 border-t border-border/40 pt-2">
         <button
-          onClick={toggleTheme}
+          onClick={handleToggleTheme}
           title={darkMode ? "Modo Claro" : "Modo Escuro"}
           className="flex items-center gap-3 px-2 py-2.5 rounded-xl text-muted-foreground hover:bg-accent hover:text-foreground transition-all duration-200"
         >

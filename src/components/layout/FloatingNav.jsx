@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Map, FileText, BarChart3, Settings, Activity, Sun, Moon, Radio, GitCompareArrows } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { toggleTheme } from "@/lib/theme";
 
 const navItems = [
   { path: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -24,9 +25,8 @@ export default function FloatingNav() {
     refetchInterval: 30000,
   });
 
-  const toggleTheme = () => {
-    document.documentElement.classList.toggle("dark");
-    setDarkMode(prev => !prev);
+  const handleToggleTheme = () => {
+    setDarkMode(toggleTheme() === "dark");
   };
 
   return (
@@ -60,7 +60,7 @@ export default function FloatingNav() {
       <div className="w-6 h-px bg-border/60 my-1" />
 
       <button
-        onClick={toggleTheme}
+        onClick={handleToggleTheme}
         title={darkMode ? "Modo Claro" : "Modo Escuro"}
         className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all duration-200"
       >
