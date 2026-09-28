@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Map, FileText, BarChart3, Settings,
-  Activity, Sun, Moon, Radio, Wrench, Globe, Download
+  Activity, Sun, Moon, Radio, Wrench, Globe, Download, GitCompareArrows
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -11,7 +11,8 @@ const navItems = [
   { path: "/",             icon: LayoutDashboard, label: "Dashboard" },
   { path: "/mapa",         icon: Map,             label: "Mapa" },
   { path: "/relatorios",   icon: FileText,        label: "Relatórios" },
-  { path: "/analise",      icon: BarChart3,       label: "Análise" },
+  { path: "/analise",      icon: BarChart3,         label: "Análise" },
+  { path: "/comparacao",   icon: GitCompareArrows,  label: "Comparação" },
   { path: "/logs",         icon: Activity,        label: "Logs" },
   { path: "/manutencao",   icon: Wrench,          label: "Manutenção" },
   { path: "/integracoes",  icon: Globe,           label: "Integrações" },

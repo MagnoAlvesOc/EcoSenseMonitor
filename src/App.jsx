@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import MapaEstacoes from './pages/MapaEstacoes';
 import Relatorios from './pages/Relatorios';
 import AnaliseEstatistica from './pages/AnaliseEstatistica';
+import ComparacaoEstacoes from './pages/ComparacaoEstacoes';
 import SystemLogsPage from './pages/SystemLogs';
 import Configuracoes from './pages/Configuracoes';
 import Manutencao from './pages/Manutencao';
@@ -45,6 +46,7 @@ const AuthenticatedApp = () => {
         <Route path="/mapa" element={<MapaEstacoes />} />
         <Route path="/relatorios" element={<Relatorios />} />
         <Route path="/analise" element={<AnaliseEstatistica />} />
+        <Route path="/comparacao" element={<ComparacaoEstacoes />} />
         <Route path="/logs" element={<SystemLogsPage />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="/manutencao" element={<Manutencao />} />
