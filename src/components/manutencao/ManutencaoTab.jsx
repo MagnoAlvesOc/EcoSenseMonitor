@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, AlertTriangle, CheckCircle2, Clock } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, CheckCircle2, Clock, Pencil } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import moment from "moment";
 
@@ -57,6 +57,7 @@ export default function ManutencaoTab() {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [filterEstacao, setFilterEstacao] = useState("all");
 
@@ -66,6 +67,11 @@ export default function ManutencaoTab() {
   const create = useMutation({
     mutationFn: (d) => base44.entities.ManutencaoPreventiva.create(d),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["manutencoes"] }); setOpen(false); setForm(EMPTY); toast({ title: "Manutenção registrada" }); },
+  });
+
+  const update = useMutation({
+    mutationFn: ({ id, d }) => base44.entities.ManutencaoPreventiva.update(id, d),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["manutencoes"] }); setOpen(false); setEditingId(null); setForm(EMPTY); toast({ title: "Manutenção atualizada" }); },
   });
 
   const remove = useMutation({
@@ -81,9 +87,26 @@ export default function ManutencaoTab() {
     return d !== null && d <= 30;
   }).sort((a, b) => getDaysUntil(a.proxima_revisao) - getDaysUntil(b.proxima_revisao));
 
+  const startEdit = (m) => {
+    setEditingId(m.id);
+    setForm({
+      estacao_id: m.estacao_id || "",
+      tipo: m.tipo || "calibracao",
+      data_realizada: m.data_realizada ? moment(m.data_realizada).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD"),
+      proxima_revisao: m.proxima_revisao ? moment(m.proxima_revisao).format("YYYY-MM-DD") : "",
+      tecnico_responsavel: m.tecnico_responsavel || "",
+      status: m.status || "ok",
+      sensores_afetados: m.sensores_afetados || "",
+      observacoes: m.observacoes || "",
+    });
+    setOpen(true);
+  };
+
   const handleSubmit = () => {
     const est = estacoes.find(e => e.id === form.estacao_id);
-    create.mutate({ ...form, estacao_nome: est?.nome || "" });
+    const data = { ...form, estacao_nome: est?.nome || "" };
+    if (editingId) update.mutate({ id: editingId, d: data });
+    else create.mutate(data);
   };
 
   return (
@@ -126,12 +149,12 @@ export default function ManutencaoTab() {
               {estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o && !editingId) setForm(EMPTY); if (!o) setEditingId(null); }}>
             <DialogTrigger asChild>
               <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Registrar Manutenção</Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Registrar Manutenção Preventiva</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>{editingId ? "Editar Manutenção Preventiva" : "Registrar Manutenção Preventiva"}</DialogTitle></DialogHeader>
               <div className="space-y-3">
                 <div>
                   <Label>Estação</Label>
@@ -169,7 +192,7 @@ export default function ManutencaoTab() {
                 <div><Label>Técnico Responsável</Label><Input value={form.tecnico_responsavel} onChange={e => setForm({ ...form, tecnico_responsavel: e.target.value })} /></div>
                 <div><Label>Sensores Afetados</Label><Input value={form.sensores_afetados} onChange={e => setForm({ ...form, sensores_afetados: e.target.value })} placeholder="DHT22, BMP280, MQ-135..." /></div>
                 <div><Label>Observações</Label><Input value={form.observacoes} onChange={e => setForm({ ...form, observacoes: e.target.value })} /></div>
-                <Button className="w-full" onClick={handleSubmit} disabled={!form.estacao_id || create.isPending}>Salvar</Button>
+                <Button className="w-full" onClick={handleSubmit} disabled={!form.estacao_id || create.isPending || update.isPending}>{editingId ? "Salvar Alterações" : "Salvar"}</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -201,6 +224,9 @@ export default function ManutencaoTab() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <AlertaBadge proxima_revisao={m.proxima_revisao} />
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => startEdit(m)} title="Editar manutenção">
+                    <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                  </Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => remove.mutate(m.id)}>
                     <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
                   </Button>
