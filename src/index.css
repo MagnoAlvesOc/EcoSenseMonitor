@@ -155,4 +155,16 @@
   .leaflet-bottom {
     bottom: calc(3.5rem + env(safe-area-inset-bottom));
   }
+
+  /* Painéis translúcidos ("vidro") ficam opacos no celular para que o mapa
+     de fundo não apareça por baixo do conteúdo — o mapa continua visível
+     apenas nas áreas livres entre os painéis */
+  .bg-background\/80,
+  .bg-background\/90,
+  .bg-background\/95 {
+    background-color: hsl(var(--background)) !important;
+  }
+  .dark .dark\:bg-card\/60 {
+    background-color: hsl(var(--card)) !important;
+  }
 }
