@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, Map, FileText, BarChart3, Settings,
-  Activity, Sun, Moon, Radio, GitCompareArrows, Globe
+  LayoutDashboard, Map, BarChart3, Settings,
+  Activity, Sun, Moon, Radio, Globe
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -11,9 +11,7 @@ import { toggleTheme } from "@/lib/theme";
 const navItems = [
   { path: "/",             icon: LayoutDashboard, label: "Dashboard" },
   { path: "/mapa",         icon: Map,             label: "Mapa" },
-  { path: "/relatorios",   icon: FileText,        label: "Relatórios" },
-  { path: "/analise",      icon: BarChart3,       label: "Análise" },
-  { path: "/comparacao",   icon: GitCompareArrows, label: "Comparação" },
+  { path: "/analises",    icon: BarChart3,       label: "Análises" },
   { path: "/logs",         icon: Activity,        label: "Logs" },
   { path: "/integracoes",  icon: Globe,           label: "Integrações" },
   { path: "/configuracoes",icon: Settings,        label: "Config" },

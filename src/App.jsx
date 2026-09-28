@@ -10,9 +10,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AppLayout from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
 import MapaEstacoes from './pages/MapaEstacoes';
-import Relatorios from './pages/Relatorios';
-import AnaliseEstatistica from './pages/AnaliseEstatistica';
-import ComparacaoEstacoes from './pages/ComparacaoEstacoes';
+import Analises from './pages/Analises';
 import SystemLogsPage from './pages/SystemLogs';
 import Configuracoes from './pages/Configuracoes';
 import Manutencao from './pages/Manutencao';
@@ -44,9 +42,7 @@ const AuthenticatedApp = () => {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/mapa" element={<MapaEstacoes />} />
-        <Route path="/relatorios" element={<Relatorios />} />
-        <Route path="/analise" element={<AnaliseEstatistica />} />
-        <Route path="/comparacao" element={<ComparacaoEstacoes />} />
+        <Route path="/analises" element={<Analises />} />
         <Route path="/logs" element={<SystemLogsPage />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="/manutencao" element={<Manutencao />} />
