@@ -1,0 +1,53 @@
+{
+  "name": "Alertas",
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "temperatura_alta",
+        "temperatura_baixa",
+        "umidade_alta",
+        "umidade_baixa",
+        "estacao_offline",
+        "bateria_baixa",
+        "co2_alto"
+      ],
+      "description": "Tipo do alerta"
+    },
+    "estacao_id": {
+      "type": "string",
+      "description": "ID da esta\u00e7\u00e3o relacionada"
+    },
+    "estacao_nome": {
+      "type": "string"
+    },
+    "mensagem": {
+      "type": "string",
+      "description": "Mensagem descritiva do alerta"
+    },
+    "valor_registrado": {
+      "type": "number"
+    },
+    "limite_configurado": {
+      "type": "number"
+    },
+    "severidade": {
+      "type": "string",
+      "enum": [
+        "info",
+        "aviso",
+        "critico"
+      ],
+      "default": "aviso"
+    },
+    "lido": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "tipo",
+    "mensagem"
+  ]
+}

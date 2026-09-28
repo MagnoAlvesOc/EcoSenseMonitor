@@ -1,0 +1,48 @@
+{
+  "name": "CustoManutencao",
+  "type": "object",
+  "properties": {
+    "estacao_id": {
+      "type": "string"
+    },
+    "estacao_nome": {
+      "type": "string"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "peca",
+        "tecnico",
+        "transporte",
+        "equipamento",
+        "outro"
+      ],
+      "description": "Tipo do custo"
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "valor": {
+      "type": "number"
+    },
+    "data": {
+      "type": "string",
+      "format": "date"
+    },
+    "fornecedor": {
+      "type": "string"
+    },
+    "nota_fiscal": {
+      "type": "string"
+    },
+    "observacoes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "estacao_id",
+    "tipo",
+    "valor",
+    "data"
+  ]
+}

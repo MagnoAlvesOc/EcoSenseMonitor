@@ -1,0 +1,47 @@
+{
+  "name": "SystemLogs",
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "erro_conexao",
+        "falha_envio",
+        "reboot",
+        "timeout",
+        "info",
+        "alerta_enviado"
+      ],
+      "description": "Tipo do log"
+    },
+    "estacao_id": {
+      "type": "string"
+    },
+    "estacao_nome": {
+      "type": "string"
+    },
+    "mensagem": {
+      "type": "string"
+    },
+    "detalhes": {
+      "type": "string"
+    },
+    "ip_origem": {
+      "type": "string"
+    },
+    "severidade": {
+      "type": "string",
+      "enum": [
+        "info",
+        "aviso",
+        "erro",
+        "critico"
+      ],
+      "default": "info"
+    }
+  },
+  "required": [
+    "tipo",
+    "mensagem"
+  ]
+}

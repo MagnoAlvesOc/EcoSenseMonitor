@@ -1,0 +1,53 @@
+{
+  "name": "AlertConfig",
+  "type": "object",
+  "properties": {
+    "temperatura_max": {
+      "type": "number",
+      "default": 40
+    },
+    "temperatura_min": {
+      "type": "number",
+      "default": 5
+    },
+    "umidade_max": {
+      "type": "number",
+      "default": 95
+    },
+    "umidade_min": {
+      "type": "number",
+      "default": 20
+    },
+    "co2_max": {
+      "type": "number",
+      "default": 1000
+    },
+    "bateria_min_v": {
+      "type": "number",
+      "default": 3.3
+    },
+    "canal_notificacao": {
+      "type": "string",
+      "enum": [
+        "email",
+        "telegram",
+        "ambos"
+      ],
+      "default": "email"
+    },
+    "email_notificacao": {
+      "type": "string"
+    },
+    "telegram_bot_token": {
+      "type": "string"
+    },
+    "telegram_chat_id": {
+      "type": "string"
+    },
+    "notificacoes_ativas": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": []
+}

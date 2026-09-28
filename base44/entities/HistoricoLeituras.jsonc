@@ -1,0 +1,98 @@
+{
+  "name": "HistoricoLeituras",
+  "type": "object",
+  "properties": {
+    "timestamp_recebimento": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora do recebimento do dado"
+    },
+    "ip_local_estacao": {
+      "type": "string",
+      "description": "Endere\u00e7o IP da placa na rede local"
+    },
+    "estacao_id": {
+      "type": "string",
+      "description": "ID da esta\u00e7\u00e3o que enviou o dado (device_id)"
+    },
+    "temperatura_c": {
+      "type": "number",
+      "description": "Temperatura DHT em graus Celsius"
+    },
+    "temperatura_bmp_c": {
+      "type": "number",
+      "description": "Temperatura BMP em graus Celsius"
+    },
+    "umidade_relativa_perc": {
+      "type": "number",
+      "description": "Umidade relativa percentual"
+    },
+    "pressao_atmosferica_hpa": {
+      "type": "number",
+      "description": "Press\u00e3o atmosf\u00e9rica em hPa"
+    },
+    "altitude_m": {
+      "type": "number",
+      "description": "Altitude em metros"
+    },
+    "indice_uv": {
+      "type": "number",
+      "description": "\u00cdndice UV"
+    },
+    "nivel_co2": {
+      "type": "number",
+      "description": "N\u00edvel de CO2 em ppm"
+    },
+    "status_bateria_v": {
+      "type": "number",
+      "description": "Tens\u00e3o da bateria em Volts"
+    },
+    "acc_x": {
+      "type": "number",
+      "description": "Aceler\u00f4metro X"
+    },
+    "acc_y": {
+      "type": "number",
+      "description": "Aceler\u00f4metro Y"
+    },
+    "acc_z": {
+      "type": "number",
+      "description": "Aceler\u00f4metro Z"
+    },
+    "gyro_x": {
+      "type": "number",
+      "description": "Girosc\u00f3pio X"
+    },
+    "gyro_y": {
+      "type": "number",
+      "description": "Girosc\u00f3pio Y"
+    },
+    "gyro_z": {
+      "type": "number",
+      "description": "Girosc\u00f3pio Z"
+    },
+    "angle_x": {
+      "type": "number",
+      "description": "\u00c2ngulo X"
+    },
+    "angle_y": {
+      "type": "number",
+      "description": "\u00c2ngulo Y"
+    },
+    "angle_z": {
+      "type": "number",
+      "description": "\u00c2ngulo Z"
+    },
+    "rssi": {
+      "type": "number",
+      "description": "Sinal Wi-Fi RSSI (dBm)"
+    },
+    "local_coleta": {
+      "type": "string",
+      "description": "Local de coleta dos dados"
+    }
+  },
+  "required": [
+    "timestamp_recebimento"
+  ]
+}

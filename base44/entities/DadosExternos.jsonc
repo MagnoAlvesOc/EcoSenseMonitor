@@ -1,0 +1,57 @@
+{
+  "name": "DadosExternos",
+  "type": "object",
+  "properties": {
+    "fonte": {
+      "type": "string",
+      "enum": [
+        "openweather",
+        "inmet",
+        "manual"
+      ],
+      "description": "Fonte dos dados externos"
+    },
+    "estacao_referencia_id": {
+      "type": "string",
+      "description": "ID da esta\u00e7\u00e3o in-situ de refer\u00eancia para compara\u00e7\u00e3o"
+    },
+    "estacao_referencia_nome": {
+      "type": "string"
+    },
+    "nome_estacao_externa": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "temperatura_c": {
+      "type": "number"
+    },
+    "umidade_relativa_perc": {
+      "type": "number"
+    },
+    "pressao_atmosferica_hpa": {
+      "type": "number"
+    },
+    "indice_uv": {
+      "type": "number"
+    },
+    "nivel_co2": {
+      "type": "number"
+    },
+    "raw_response": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "fonte",
+    "timestamp"
+  ]
+}

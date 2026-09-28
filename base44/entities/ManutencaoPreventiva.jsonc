@@ -1,0 +1,59 @@
+{
+  "name": "ManutencaoPreventiva",
+  "type": "object",
+  "properties": {
+    "estacao_id": {
+      "type": "string"
+    },
+    "estacao_nome": {
+      "type": "string"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "calibracao",
+        "troca_sensor",
+        "limpeza",
+        "firmware",
+        "inspecao_geral",
+        "outro"
+      ],
+      "description": "Tipo de manuten\u00e7\u00e3o"
+    },
+    "data_realizada": {
+      "type": "string",
+      "format": "date"
+    },
+    "proxima_revisao": {
+      "type": "string",
+      "format": "date"
+    },
+    "tecnico_responsavel": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "pendente",
+        "critico"
+      ],
+      "default": "ok"
+    },
+    "sensores_afetados": {
+      "type": "string"
+    },
+    "observacoes": {
+      "type": "string"
+    },
+    "alerta_enviado": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "estacao_id",
+    "tipo",
+    "data_realizada"
+  ]
+}
