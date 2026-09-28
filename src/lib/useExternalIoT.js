@@ -72,12 +72,14 @@ function writeOfflineCache(rows) {
   }
 }
 
-// Altitude padrão: sempre a do GPS (altitude_gps_m) quando disponível;
-// o valor do sensor BMP só é usado se o GPS não tiver altitude válida.
+// Altitude padrão: sempre a do sensor barométrico BMP (altitude_bmp_m ou
+// altitude_m enviada pela estação); o GPS só é usado se o BMP não tiver valor válido.
 function normalizeAltitude(row) {
-  return row && typeof row === "object" && isValid(row.altitude_gps_m)
-    ? { ...row, altitude_m: Number(row.altitude_gps_m) }
-    : row;
+  if (!row || typeof row !== "object") return row;
+  const bmp = isValid(row.altitude_bmp_m) ? Number(row.altitude_bmp_m)
+    : isValid(row.altitude_m) ? Number(row.altitude_m) : null;
+  if (bmp !== null) return { ...row, altitude_m: bmp };
+  return isValid(row.altitude_gps_m) ? { ...row, altitude_m: Number(row.altitude_gps_m) } : row;
 }
 
 function toRows(raw, fallback) {
