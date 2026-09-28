@@ -327,10 +327,17 @@ export default function FloatingMapBg() {
         attributionControl={true}
         worldCopyJump={false}
       >
+        {/* Satélite de alta resolução + nomes de lugares — gratuito e sem chave */}
         <TileLayer
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           maxZoom={19}
-          attribution='Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri (Thailand), TomTom'
+          attribution='Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics'
+          noWrap={true}
+        />
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+          maxZoom={19}
+          attribution=''
           noWrap={true}
         />
         <MapClickHandler onMapClick={setClickedCoords} />
