@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Send, ArrowLeft, Radio } from "lucide-react";
+import { Mail, Send, ArrowLeft } from "lucide-react";
+import EcoSenseLogo from "@/components/shared/EcoSenseLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,9 +31,7 @@ export default function Contato() {
         </Link>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
-            <Radio className="w-5 h-5 text-primary-foreground" />
-          </div>
+          <EcoSenseLogo className="w-10 h-10" />
           <span className="font-bold text-lg">EcoSense Monitor</span>
         </div>
 

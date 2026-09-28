@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Map, BarChart3, Settings,
-  Activity, Sun, Moon, Radio, Globe, Info, Mail
+  Activity, Sun, Moon, Globe, Info, Mail
 } from "lucide-react";
+import EcoSenseLogo from "@/components/shared/EcoSenseLogo";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { toggleTheme } from "@/lib/theme";
@@ -42,9 +43,7 @@ export default function SideNav() {
     >
       {/* Logo — apenas desktop */}
       <div className="hidden md:flex items-center gap-3 px-2 py-4 border-b border-border/40">
-        <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
-          <Radio className="w-4 h-4 text-primary-foreground" />
-        </div>
+        <EcoSenseLogo className="w-8 h-8" />
         <span className="font-bold text-sm text-foreground leading-tight whitespace-nowrap overflow-hidden">
           EcoSense<br />Monitor
         </span>

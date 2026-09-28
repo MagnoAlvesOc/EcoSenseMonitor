@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Radio, X } from "lucide-react";
+import { X } from "lucide-react";
+import EcoSenseLogo from "@/components/shared/EcoSenseLogo";
 
 const DISMISSED_KEY = "install_banner_dismissed";
 
@@ -28,9 +29,7 @@ export default function InstallAppBanner() {
   return (
     <div className="fixed inset-x-2 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 md:hidden">
       <div className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-3 flex items-start gap-3">
-        <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
-          <Radio className="w-4 h-4 text-primary-foreground" />
-        </div>
+        <EcoSenseLogo className="w-8 h-8" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold">Instale o app na tela inicial</p>
           <p className="text-xs text-muted-foreground mt-0.5">
