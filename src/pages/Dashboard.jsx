@@ -223,7 +223,7 @@ function ChartDrawer({ data, externalData }) {
 
   if (!open) {
     return (
-      <div className="fixed bottom-[calc(9rem+env(safe-area-inset-bottom))] md:bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+      <div className="fixed bottom-[calc(10.5rem+env(safe-area-inset-bottom))] md:bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
         <button
           onClick={() => setOpen(true)}
           className="flex items-center gap-2 bg-card/85 backdrop-blur-xl border border-border rounded-full px-4 py-2 shadow-lg hover:bg-card transition-colors dark:bg-card/50"
