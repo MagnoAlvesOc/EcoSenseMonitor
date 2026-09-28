@@ -38,7 +38,7 @@ export default function Contato() {
 
         <h1 className="text-3xl font-bold mb-2">Contato</h1>
         <p className="text-muted-foreground mb-8">
-          Fale com a equipe da LabirPesq sobre as estações, os dados ou a plataforma.
+          Fale com a equipe da EcoSense Monitor sobre as estações, os dados ou a plataforma.
         </p>
 
         <a
