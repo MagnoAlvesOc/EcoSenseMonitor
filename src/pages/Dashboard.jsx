@@ -415,9 +415,9 @@ export default function Dashboard() {
       {/* Toggle buttons (KPIs + Energia) — sempre visíveis */}
       <ToggleGroup
         kpiOpen={kpiOpen}
-        onKpiToggle={() => setKpiOpen(!kpiOpen)}
+        onKpiToggle={() => { setKpiOpen(!kpiOpen); if (!kpiOpen) setEnergyOpen(false); }}
         energyOpen={energyOpen}
-        onEnergyToggle={() => setEnergyOpen(!energyOpen)}
+        onEnergyToggle={() => { setEnergyOpen(!energyOpen); if (!energyOpen) setKpiOpen(false); }}
         sleeping={energyRow ? isDeepSleep(energyRow) : false}
       />
 
