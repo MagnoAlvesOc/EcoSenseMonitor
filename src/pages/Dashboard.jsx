@@ -7,7 +7,7 @@ import { useExternalIoT, safeNum, getTs, isDeepSleep, isStationOnline } from "@/
 import EnergyPanel from "@/components/dashboard/EnergyPanel";
 import {
   Thermometer, Droplets, Gauge, Cloud, Mountain, Signal, Radio, Satellite,
-  Wifi, WifiOff, Activity, ShieldCheck, Clock, Zap, CloudRain,
+  Wifi, WifiOff, Activity, ShieldCheck, Clock, Zap, CloudRain, Moon,
   ChevronLeft, ChevronRight, ChevronUp, ChevronDown, BarChart3, X,
 } from "lucide-react";
 import KpiCard from "@/components/dashboard/v2/KpiCard";
@@ -282,17 +282,28 @@ function ChartDrawer({ data, externalData }) {
   );
 }
 
-// ── Toggle buttons (always visible) ──────────────────────────────────────────
-function KpiToggle({ onClick, isOpen }) {
+// ── Toggle buttons (KPIs + Energia, juntos) ──────────────────────────────────
+function ToggleGroup({ kpiOpen, onKpiToggle, energyOpen, onEnergyToggle, sleeping }) {
   return (
-    <div className="fixed right-3 top-3 md:left-[182px] md:right-auto z-40 pointer-events-auto">
+    <div className="fixed right-3 top-3 md:left-[182px] md:right-auto z-40 pointer-events-auto flex items-center gap-1.5">
       <button
-        onClick={onClick}
+        onClick={onKpiToggle}
         className="flex items-center gap-1.5 bg-card/85 backdrop-blur-xl border border-border rounded-lg px-2.5 py-1.5 shadow-lg hover:bg-card transition-colors dark:bg-card/50"
         title="KPIs"
       >
         <span className="text-[11px] font-semibold text-foreground">KPIs</span>
-        {isOpen ? <ChevronLeft className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
+        {kpiOpen ? <ChevronLeft className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
+      </button>
+      <button
+        onClick={onEnergyToggle}
+        className={`flex items-center gap-1.5 bg-card/85 backdrop-blur-xl border border-border rounded-lg px-2.5 py-1.5 shadow-lg hover:bg-card transition-colors dark:bg-card/50 ${
+          sleeping ? "border-amber-500/50" : ""
+        }`}
+        title="Energia da Estação"
+      >
+        {sleeping ? <Moon className="w-3.5 h-3.5 text-amber-500" /> : <Zap className="w-3.5 h-3.5 text-emerald-500" />}
+        <span className="text-[11px] font-semibold text-foreground">Energia</span>
+        {energyOpen ? <ChevronLeft className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
       </button>
     </div>
   );
@@ -301,6 +312,7 @@ function KpiToggle({ onClick, isOpen }) {
 // ── Main Dashboard ───────────────────────────────────────────────────────────
 export default function Dashboard() {
   const [kpiOpen, setKpiOpen] = useState(false);
+  const [energyOpen, setEnergyOpen] = useState(false);
 
   const { data: rawData, isLoading, isError } = useExternalIoT();
   const allData = rawData ?? [];
@@ -400,8 +412,14 @@ export default function Dashboard() {
       {/* Top status bar */}
       <TopBar isOnline={isOnline} latest={latest} isError={isError} deepSleep={latest ? isDeepSleep(latest) : false} />
 
-      {/* Toggle buttons — always visible */}
-      <KpiToggle onClick={() => setKpiOpen(!kpiOpen)} isOpen={kpiOpen} />
+      {/* Toggle buttons (KPIs + Energia) — sempre visíveis */}
+      <ToggleGroup
+        kpiOpen={kpiOpen}
+        onKpiToggle={() => setKpiOpen(!kpiOpen)}
+        energyOpen={energyOpen}
+        onEnergyToggle={() => setEnergyOpen(!energyOpen)}
+        sleeping={energyRow ? isDeepSleep(energyRow) : false}
+      />
 
       {/* Popups — shown on demand */}
       <KpiPopup kpis={kpis} open={kpiOpen} onClose={() => setKpiOpen(false)} />
@@ -410,7 +428,7 @@ export default function Dashboard() {
       <SidePanel cards={sideCards} onlineLoading={onlineEnvLoading} />
 
       {/* Energia da estação (ciclo de deep sleep) */}
-      <EnergyPanel row={energyRow} />
+      <EnergyPanel row={energyRow} open={energyOpen} onClose={() => setEnergyOpen(false)} />
 
       {/* Bottom chart drawer */}
       <ChartDrawer data={allData} externalData={onlineEnvData} />
