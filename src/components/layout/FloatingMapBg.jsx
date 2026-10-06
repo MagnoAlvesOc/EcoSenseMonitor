@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import moment from "moment";
 import { useStation } from "@/lib/StationContext";
-import { useExternalIoT, safeNum, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
+import { useExternalIoT, safeNum, getTs, isStationOnline } from "@/lib/useExternalIoT";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -326,8 +326,8 @@ export default function FloatingMapBg() {
   const getStatus = (est) => {
     const reading = getLatestReading(est);
     if (!reading) return "offline";
-    const secsSince = (Date.now() - getReadingTs(reading)) / 1000;
-    return secsSince < ONLINE_THRESHOLD_S ? "online" : "offline";
+    // Durante DEEP_SLEEP a estação continua considerada online
+    return isStationOnline(reading) ? "online" : "offline";
   };
 
   // ── Auto-registro: cria a estação no mapa quando a API envia GPS válido ────

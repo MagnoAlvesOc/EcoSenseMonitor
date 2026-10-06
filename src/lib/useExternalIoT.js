@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react";
 import moment from "moment";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwLRTwhIVsKvvZAnkb86dVMjmcEY2F78r2j1BPDin389X_T-50ovfBkKzS16zFS_LRk/exec";
+  "https://script.google.com/macros/s/AKfycbzPro9AfIbSZnRK1iQJbVhsgr34mpxH93DBtHZUPE88QfrUGnJyvXrVwlcR62npNHpY/exec";
 
 // Tempo máximo (em segundos) sem leitura antes de considerar a estação offline.
 // O Google Apps Script faz cache da resposta (~5 min), então mesmo com a planilha
@@ -82,6 +82,50 @@ function normalizeAltitude(row) {
   return isValid(row.altitude_gps_m) ? { ...row, altitude_m: Number(row.altitude_gps_m) } : row;
 }
 
+// ── Energia da estação (ciclo de deep sleep) ──────────────────────────────────
+export function isDeepSleep(row) {
+  return !!row && String(row.estado_energia || "").toUpperCase() === "DEEP_SLEEP";
+}
+
+// Durante o DEEP_SLEEP a estação NÃO é considerada offline: a janela de
+// tolerância cobre o tempo de sono programado (2x + 2 min por folga).
+export function isStationOnline(row) {
+  if (!row) return false;
+  const secsSince = (Date.now() - getTs(row)) / 1000;
+  if (isDeepSleep(row)) {
+    const sleep = safeNum(row.tempo_sleep_programado_s);
+    const grace = sleep != null && sleep > 0
+      ? Math.max(ONLINE_THRESHOLD_S, sleep * 2 + 120)
+      : ONLINE_THRESHOLD_S * 3;
+    return secsSince < grace;
+  }
+  return secsSince < ONLINE_THRESHOLD_S;
+}
+
+// Campos de sensores/GPS mantidos em tela com os últimos valores válidos
+// enquanto a estação está em DEEP_SLEEP (payload do sono não carrega leituras).
+const HOLD_FIELDS = [
+  "temperatura_c", "temperatura_bmp_c", "umidade_relativa_perc",
+  "pressao_atmosferica_hpa", "altitude_m", "altitude_gps_m",
+  "latitude", "longitude", "satellites", "rssi",
+  "nivel_co2", "indice_uv", "status_bateria_v",
+];
+const lastValidHold = {};
+
+function holdLastValid(row) {
+  if (!row || typeof row !== "object") return row;
+  const out = { ...row };
+  const sleeping = isDeepSleep(row);
+  for (const k of HOLD_FIELDS) {
+    if (isValid(out[k])) {
+      lastValidHold[k] = Number(out[k]);
+    } else if (sleeping && lastValidHold[k] != null) {
+      out[k] = lastValidHold[k];
+    }
+  }
+  return out;
+}
+
 function toRows(raw, fallback) {
   if (Array.isArray(raw)) return raw;
   if (raw && typeof raw === "object") return [raw];
@@ -99,7 +143,7 @@ async function fetchLatest({ signal } = {}) {
       credentials: "omit",
     });
     if (!res.ok) throw new Error("API error");
-    const rows = toRows(await res.json(), lastValidData).map(normalizeAltitude);
+    const rows = toRows(await res.json(), lastValidData).map(normalizeAltitude).map(holdLastValid);
     lastValidData = rows;
     return rows;
   } finally {
@@ -124,6 +168,7 @@ async function fetchHistory({ signal } = {}) {
     if (!res.ok) throw new Error("API error");
     return toRows(await res.json(), [])
       .map(normalizeAltitude)
+      .map(holdLastValid)
       .sort((a, b) => getTs(b) - getTs(a));
   } finally {
     clearTimeout(timeout);
@@ -247,8 +292,18 @@ export function generateLogs(sortedDesc) {
   const latestTs = getTs(latest);
   const secsSince = (Date.now() - latestTs) / 1000;
 
-  // ONLINE / OFFLINE
-  if (secsSince >= ONLINE_THRESHOLD_S) {
+  // ONLINE / OFFLINE / DEEP SLEEP
+  if (isDeepSleep(latest)) {
+    logs.push({
+      id: "sleep-current",
+      tipo: "DEEP SLEEP",
+      severidade: "info",
+      mensagem: `Estação em modo economia (Deep Sleep) — ciclo ${latest.ciclo_deepsleep != null ? `#${latest.ciclo_deepsleep}` : "—"}`,
+      estacao_nome: latest.estacao_nome || latest.estacao_id || "—",
+      ip_origem: latest.ip_local_estacao || "—",
+      timestamp: latestTs,
+    });
+  } else if (secsSince >= ONLINE_THRESHOLD_S) {
     logs.push({
       id: "offline-current",
       tipo: "OFFLINE",

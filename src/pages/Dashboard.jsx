@@ -3,7 +3,8 @@ import moment from "moment";
 import "moment/locale/pt-br";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { useExternalIoT, safeNum, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
+import { useExternalIoT, safeNum, getTs, isDeepSleep, isStationOnline } from "@/lib/useExternalIoT";
+import EnergyPanel from "@/components/dashboard/EnergyPanel";
 import {
   Thermometer, Droplets, Gauge, Cloud, Mountain, Signal, Radio, Satellite,
   Wifi, WifiOff, Activity, ShieldCheck, Clock, Zap, CloudRain,
@@ -100,7 +101,7 @@ function getRainChanceStatus(v) {
 }
 
 // ── Top Status Bar ───────────────────────────────────────────────────────────
-function TopBar({ isOnline, latest, isError }) {
+function TopBar({ isOnline, latest, isError, deepSleep }) {
   const lastTs = latest ? moment(getTs(latest)).format("DD/MM HH:mm:ss") : null;
   const secsSinceLast = latest ? Math.round((Date.now() - getTs(latest)) / 1000) : null;
 
@@ -115,10 +116,10 @@ function TopBar({ isOnline, latest, isError }) {
     <div className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] pointer-events-auto">
       <div className="flex items-center gap-2 bg-card/85 backdrop-blur-xl border border-border rounded-full px-3 py-1.5 shadow-lg dark:bg-card/50">
         <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-          isError ? "bg-red-500" : isOnline ? "bg-emerald-500 animate-pulse" : latest ? "bg-red-400" : "bg-slate-400"
+          isError ? "bg-red-500" : deepSleep ? "bg-amber-500 animate-pulse" : isOnline ? "bg-emerald-500 animate-pulse" : latest ? "bg-red-400" : "bg-slate-400"
         }`} />
         <span className="text-[11px] font-semibold text-foreground whitespace-nowrap">
-          {isError ? "Erro API" : isOnline ? "Online" : latest ? "Offline" : "Sem dados"}
+          {isError ? "Erro API" : deepSleep ? "Deep Sleep" : isOnline ? "Online" : latest ? "Offline" : "Sem dados"}
         </span>
         {lastTs && (
           <>
@@ -315,8 +316,14 @@ export default function Dashboard() {
   const latest = allData[0] ?? null;
   const prev = allData[2] ?? null;
 
+  // Última leitura com informação de energia — alimenta o painel "Energia da Estação"
+  const energyRow = useMemo(
+    () => allData.find((r) => r.estado_energia != null && r.estado_energia !== "") ?? latest,
+    [allData, latest]
+  );
+
   const secsSinceLast = latest ? (Date.now() - getTs(latest)) / 1000 : null;
-  const isOnline = secsSinceLast !== null && secsSinceLast < ONLINE_THRESHOLD_S;
+  const isOnline = latest ? isStationOnline(latest) : false;
 
   const delta = (curr, p) =>
     curr != null && p != null && p !== 0 ? ((curr - p) / Math.abs(p)) * 100 : null;
@@ -326,7 +333,7 @@ export default function Dashboard() {
     for (const r of allData) {
       const sid = r.estacao_id;
       if (!sid || map[sid]) continue;
-      map[sid] = (Date.now() - getTs(r)) / 1000 < ONLINE_THRESHOLD_S ? "online" : "offline";
+      map[sid] = isStationOnline(r) ? "online" : "offline";
     }
     return map;
   }, [allData]);
@@ -391,7 +398,7 @@ export default function Dashboard() {
   return (
     <>
       {/* Top status bar */}
-      <TopBar isOnline={isOnline} latest={latest} isError={isError} />
+      <TopBar isOnline={isOnline} latest={latest} isError={isError} deepSleep={latest ? isDeepSleep(latest) : false} />
 
       {/* Toggle buttons — always visible */}
       <KpiToggle onClick={() => setKpiOpen(!kpiOpen)} isOpen={kpiOpen} />
@@ -401,6 +408,9 @@ export default function Dashboard() {
 
       {/* Unified fixed side panel (station metrics + environmental) */}
       <SidePanel cards={sideCards} onlineLoading={onlineEnvLoading} />
+
+      {/* Energia da estação (ciclo de deep sleep) */}
+      <EnergyPanel row={energyRow} />
 
       {/* Bottom chart drawer */}
       <ChartDrawer data={allData} externalData={onlineEnvData} />

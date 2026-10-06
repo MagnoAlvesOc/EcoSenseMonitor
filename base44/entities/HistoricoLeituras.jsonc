@@ -90,6 +90,42 @@
     "local_coleta": {
       "type": "string",
       "description": "Local de coleta dos dados"
+    },
+    "estado_energia": {
+      "type": "string",
+      "description": "Estado de energia da esta\u00e7\u00e3o (ex: COLETANDO, DEEP_SLEEP)"
+    },
+    "evento_energia": {
+      "type": "string",
+      "description": "Evento atual do ciclo de energia"
+    },
+    "ciclo_deepsleep": {
+      "type": "number",
+      "description": "N\u00famero do ciclo de deep sleep"
+    },
+    "motivo_despertar": {
+      "type": "string",
+      "description": "Motivo do despertar da esta\u00e7\u00e3o"
+    },
+    "tempo_ativo_s": {
+      "type": "number",
+      "description": "Tempo ativo na janela atual (segundos)"
+    },
+    "tempo_restante_ativo_s": {
+      "type": "number",
+      "description": "Tempo restante acordado na janela atual (segundos)"
+    },
+    "tempo_sleep_programado_s": {
+      "type": "number",
+      "description": "Dura\u00e7\u00e3o programada do deep sleep (segundos)"
+    },
+    "duracao_sleep_anterior_s": {
+      "type": "number",
+      "description": "Dura\u00e7\u00e3o do \u00faltimo deep sleep (segundos)"
+    },
+    "proximo_despertar_previsto": {
+      "type": "string",
+      "description": "Pr\u00f3ximo despertar previsto (timestamp ou segundos restantes)"
     }
   },
   "required": [
