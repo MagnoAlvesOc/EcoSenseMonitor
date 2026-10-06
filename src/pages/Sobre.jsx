@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { MapPin, BarChart3, ShieldCheck, ArrowLeft } from "lucide-react";
 import EcoSenseLogo from "@/components/shared/EcoSenseLogo";
 import MobilePageHeader from "@/components/layout/MobilePageHeader";
+import LegalFooter from "@/components/shared/LegalFooter";
 
 export default function Sobre() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <MobilePageHeader />
-      <div className="mx-auto max-w-2xl px-4 pt-[calc(4.5rem_+_env(safe-area-inset-top))] pb-10 md:pt-10">
+      <div className="flex-1 mx-auto max-w-2xl px-4 pt-[calc(4.5rem_+_env(safe-area-inset-top))] pb-10 md:pt-10">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="w-4 h-4" /> Voltar ao app
         </Link>
@@ -77,6 +78,7 @@ export default function Sobre() {
           .
         </p>
       </div>
+      <LegalFooter />
     </div>
   );
 }

@@ -5,6 +5,9 @@ import { ChevronLeft } from "lucide-react";
 const TITLES = {
   "/sobre": "Sobre",
   "/contato": "Contato",
+  "/termos": "Termos de Uso",
+  "/privacidade": "Política de Privacidade",
+  "/cookies": "Política de Cookies",
   "/mapa": "Mapa das Estações",
   "/analises": "Análises",
   "/logs": "Logs do Sistema",

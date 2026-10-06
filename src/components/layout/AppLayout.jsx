@@ -7,6 +7,7 @@ import SideNav from "./SideNav";
 import MobilePageHeader from "./MobilePageHeader";
 import InstallAppBanner from "./InstallAppBanner";
 import AlertsNotifier from "../dashboard/AlertsNotifier";
+import LegalFooter from "@/components/shared/LegalFooter";
 
 export default function AppLayout() {
   // No Dashboard o mapa de fundo precisa continuar interativo nas áreas vazias.
@@ -61,6 +62,7 @@ export default function AppLayout() {
             <Outlet />
           </Suspense>
         </motion.div>
+        <LegalFooter className="pb-[calc(4.75rem_+_env(safe-area-inset-bottom))] md:pb-4 md:pl-[182px]" />
       </div>
     </div>
   );

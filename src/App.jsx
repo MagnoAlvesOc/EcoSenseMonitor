@@ -20,6 +20,9 @@ const Integracoes = lazy(() => import('./pages/Integracoes'));
 const RelatorioPDF = lazy(() => import('./pages/RelatorioPDF'));
 const Sobre = lazy(() => import('./pages/Sobre'));
 const Contato = lazy(() => import('./pages/Contato'));
+const Termos = lazy(() => import('./pages/Termos'));
+const Privacidade = lazy(() => import('./pages/Privacidade'));
+const Cookies = lazy(() => import('./pages/Cookies'));
 
 // Sub-abas em rotas aninhadas (/analises/relatorios, /manutencao/custos, ...)
 const Relatorios = lazy(() => import('./pages/Relatorios'));
@@ -42,13 +45,16 @@ const PageLoader = () => (
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
-  const isPublicPage = ["/sobre", "/contato"].includes(window.location.pathname);
+  const isPublicPage = ["/sobre", "/contato", "/termos", "/privacidade", "/cookies"].includes(window.location.pathname);
 
   if (isPublicPage) {
     return (
       <Routes>
         <Route path="/sobre" element={<Sobre />} />
         <Route path="/contato" element={<Contato />} />
+        <Route path="/termos" element={<Termos />} />
+        <Route path="/privacidade" element={<Privacidade />} />
+        <Route path="/cookies" element={<Cookies />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     );
@@ -103,6 +109,9 @@ const AuthenticatedApp = () => {
       {/* Páginas públicas — acessíveis sem login */}
       <Route path="/sobre" element={<Sobre />} />
       <Route path="/contato" element={<Contato />} />
+      <Route path="/termos" element={<Termos />} />
+      <Route path="/privacidade" element={<Privacidade />} />
+      <Route path="/cookies" element={<Cookies />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
