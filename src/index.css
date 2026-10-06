@@ -178,4 +178,12 @@
   .dark .dark\:bg-card\/60 {
     background-color: hsl(var(--card)) !important;
   }
+
+  /* Alvos de toque mínimos de 44×44px em todos os botões (requisito iOS HIG) */
+  button,
+  [role="button"],
+  [role="tab"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }

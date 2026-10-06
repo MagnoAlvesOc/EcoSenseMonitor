@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Zap, TrendingUp, TrendingDown, Minus, AlertTriangle, Radio } from "lucide-react";
 import moment from "moment";
@@ -156,22 +157,22 @@ export default function TempoRealTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-1.5">Minha Estação (In-Situ)</p>
-            <Select value={stationKey} onValueChange={setStationKey}>
+            <ResponsiveSelect value={stationKey} onValueChange={setStationKey}>
               <SelectTrigger><SelectValue placeholder="Selecionar estação" /></SelectTrigger>
               <SelectContent>
                 {stations.map(s => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}
               </SelectContent>
-            </Select>
+            </ResponsiveSelect>
           </div>
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-1.5">Fonte Externa</p>
-            <Select value={fonte} onValueChange={setFonte}>
+            <ResponsiveSelect value={fonte} onValueChange={setFonte}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="openmeteo">Open-Meteo (gratuita, sem chave)</SelectItem>
                 <SelectItem value="openweather">OpenWeatherMap (usa a chave salva)</SelectItem>
               </SelectContent>
-            </Select>
+            </ResponsiveSelect>
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1.5">

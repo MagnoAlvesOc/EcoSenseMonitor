@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Activity, AlertCircle, Info, AlertTriangle, Wifi, WifiOff } from "lucide-react";
 import moment from "moment";
 import { useExternalIoT, generateLogs, getTs } from "@/lib/useExternalIoT";
@@ -61,7 +62,7 @@ export default function SystemLogsPage() {
           <h1 className="text-xl font-bold">Logs do Sistema</h1>
           <p className="text-xs text-muted-foreground">Logs automáticos gerados com base na API em tempo real</p>
         </div>
-        <Select value={filter} onValueChange={setFilter}>
+        <ResponsiveSelect value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-36">
             <SelectValue placeholder="Filtrar" />
           </SelectTrigger>
@@ -72,7 +73,7 @@ export default function SystemLogsPage() {
             <SelectItem value="erro">Erros</SelectItem>
             <SelectItem value="critico">Críticos</SelectItem>
           </SelectContent>
-        </Select>
+        </ResponsiveSelect>
       </GlassCard>
 
       {/* Status atual */}

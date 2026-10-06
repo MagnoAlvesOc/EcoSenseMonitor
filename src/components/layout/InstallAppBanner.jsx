@@ -27,7 +27,7 @@ export default function InstallAppBanner() {
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   return (
-    <div className="fixed inset-x-2 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-40 md:hidden">
+    <div className="fixed inset-x-2 bottom-[calc(3.5rem_+_env(safe-area-inset-bottom))] z-40 md:hidden">
       <div className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-3 flex items-start gap-3">
         <EcoSenseLogo className="w-8 h-8" />
         <div className="flex-1 min-w-0">

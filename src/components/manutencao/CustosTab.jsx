@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -112,7 +113,7 @@ export default function CustosTab() {
       <GlassCard className="p-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <Select value={filterEstacao} onValueChange={setFilterEstacao}>
+            <ResponsiveSelect value={filterEstacao} onValueChange={setFilterEstacao}>
               <SelectTrigger className="w-44 h-8 text-xs">
                 <SelectValue placeholder="Filtrar estação" />
               </SelectTrigger>
@@ -120,7 +121,7 @@ export default function CustosTab() {
                 <SelectItem value="all">Todas as estações</SelectItem>
                 {estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}
               </SelectContent>
-            </Select>
+            </ResponsiveSelect>
             <span className="text-xs text-muted-foreground">Total: R$ {totalFiltrado.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -132,15 +133,15 @@ export default function CustosTab() {
               <div className="space-y-3">
                 <div>
                   <Label>Estação</Label>
-                  <Select value={form.estacao_id} onValueChange={v => setForm({ ...form, estacao_id: v })}>
+                  <ResponsiveSelect value={form.estacao_id} onValueChange={v => setForm({ ...form, estacao_id: v })}>
                     <SelectTrigger><SelectValue placeholder="Selecionar estação" /></SelectTrigger>
                     <SelectContent>{estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}</SelectContent>
-                  </Select>
+                  </ResponsiveSelect>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Tipo</Label>
-                    <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
+                    <ResponsiveSelect value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="peca">Peça</SelectItem>
@@ -149,7 +150,7 @@ export default function CustosTab() {
                         <SelectItem value="equipamento">Equipamento</SelectItem>
                         <SelectItem value="outro">Outro</SelectItem>
                       </SelectContent>
-                    </Select>
+                    </ResponsiveSelect>
                   </div>
                   <div>
                     <Label>Valor (R$)</Label>

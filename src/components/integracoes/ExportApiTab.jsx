@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Copy, Download, Code2, CheckCircle2, RefreshCw, Zap, AlertTriangle, Globe } from "lucide-react";
@@ -288,7 +289,7 @@ curl -o insitu_dados.json "${window.location.href.split("#")[0]}"`;
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div>
             <Label>Formato</Label>
-            <Select value={formato} onValueChange={setFormato}>
+            <ResponsiveSelect value={formato} onValueChange={setFormato}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="tudo">Tudo (IA completo)</SelectItem>
@@ -296,17 +297,17 @@ curl -o insitu_dados.json "${window.location.href.split("#")[0]}"`;
                 <SelectItem value="estacoes">Estatísticas por estação</SelectItem>
                 <SelectItem value="comparacao">Comparação InSitu vs Externo</SelectItem>
               </SelectContent>
-            </Select>
+            </ResponsiveSelect>
           </div>
           <div>
             <Label>Estação</Label>
-            <Select value={estacaoId} onValueChange={setEstacaoId}>
+            <ResponsiveSelect value={estacaoId} onValueChange={setEstacaoId}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas</SelectItem>
                 {estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}
               </SelectContent>
-            </Select>
+            </ResponsiveSelect>
           </div>
           <div>
             <Label>Início</Label>

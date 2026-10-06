@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, RefreshCw, Trash2, CloudDownload, Info } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -131,7 +132,7 @@ export default function FontesExternasTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <Label>Fonte de Dados</Label>
-            <Select value={fonte} onValueChange={setFonte}>
+            <ResponsiveSelect value={fonte} onValueChange={setFonte}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -139,16 +140,16 @@ export default function FontesExternasTab() {
                 <SelectItem value="openweather">OpenWeatherMap</SelectItem>
                 <SelectItem value="openmeteo">Open-Meteo (gratuita, sem chave)</SelectItem>
               </SelectContent>
-            </Select>
+            </ResponsiveSelect>
           </div>
           <div>
             <Label>Estação de Referência (In-Situ)</Label>
-            <Select value={estacaoId} onValueChange={setEstacaoId}>
+            <ResponsiveSelect value={estacaoId} onValueChange={setEstacaoId}>
               <SelectTrigger><SelectValue placeholder="Selecionar estação" /></SelectTrigger>
               <SelectContent>
                 {estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}
               </SelectContent>
-            </Select>
+            </ResponsiveSelect>
           </div>
         </div>
 

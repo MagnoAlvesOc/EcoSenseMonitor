@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Switch } from "@/components/ui/switch";
 import { Settings, Bell, Save, Webhook, Copy } from "lucide-react";
 import DeleteAccountCard from "@/components/configuracoes/DeleteAccountCard";
@@ -165,14 +166,14 @@ void enviarDados() {
             </div>
             <div>
               <Label>Canal</Label>
-              <Select value={form.canal_notificacao} onValueChange={v => setForm({ ...form, canal_notificacao: v })}>
+              <ResponsiveSelect value={form.canal_notificacao} onValueChange={v => setForm({ ...form, canal_notificacao: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="email">E-mail</SelectItem>
                   <SelectItem value="telegram">Telegram</SelectItem>
                   <SelectItem value="ambos">Ambos</SelectItem>
                 </SelectContent>
-              </Select>
+              </ResponsiveSelect>
             </div>
             {(form.canal_notificacao === "email" || form.canal_notificacao === "ambos") && (
               <div><Label>E-mail</Label><Input type="email" value={form.email_notificacao} onChange={e => setForm({ ...form, email_notificacao: e.target.value })} placeholder="seu@email.com" /></div>

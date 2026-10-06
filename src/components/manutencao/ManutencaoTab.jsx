@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, AlertTriangle, CheckCircle2, Clock, Pencil } from "lucide-react";
@@ -156,13 +157,13 @@ export default function ManutencaoTab() {
       {/* List */}
       <GlassCard className="p-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-          <Select value={filterEstacao} onValueChange={setFilterEstacao}>
+          <ResponsiveSelect value={filterEstacao} onValueChange={setFilterEstacao}>
             <SelectTrigger className="w-44 h-8 text-xs"><SelectValue placeholder="Filtrar estação" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as estações</SelectItem>
               {estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}
             </SelectContent>
-          </Select>
+          </ResponsiveSelect>
           <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o && !editingId) setForm(EMPTY); if (!o) setEditingId(null); }}>
             <DialogTrigger asChild>
               <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Registrar Manutenção</Button>
@@ -172,31 +173,31 @@ export default function ManutencaoTab() {
               <div className="space-y-3">
                 <div>
                   <Label>Estação</Label>
-                  <Select value={form.estacao_id} onValueChange={v => setForm({ ...form, estacao_id: v })}>
+                  <ResponsiveSelect value={form.estacao_id} onValueChange={v => setForm({ ...form, estacao_id: v })}>
                     <SelectTrigger><SelectValue placeholder="Selecionar estação" /></SelectTrigger>
                     <SelectContent>{estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}</SelectContent>
-                  </Select>
+                  </ResponsiveSelect>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Tipo</Label>
-                    <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
+                    <ResponsiveSelect value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {Object.entries(TIPO_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
                       </SelectContent>
-                    </Select>
+                    </ResponsiveSelect>
                   </div>
                   <div>
                     <Label>Status</Label>
-                    <Select value={form.status} onValueChange={v => setForm({ ...form, status: v })}>
+                    <ResponsiveSelect value={form.status} onValueChange={v => setForm({ ...form, status: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="ok">OK</SelectItem>
                         <SelectItem value="pendente">Pendente</SelectItem>
                         <SelectItem value="critico">Crítico</SelectItem>
                       </SelectContent>
-                    </Select>
+                    </ResponsiveSelect>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">

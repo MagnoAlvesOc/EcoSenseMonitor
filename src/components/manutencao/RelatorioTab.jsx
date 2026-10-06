@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { FileDown, Loader2, BarChart3 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import moment from "moment";
@@ -227,10 +228,10 @@ export default function RelatorioTab() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
             <Label>Estação</Label>
-            <Select value={estacaoId} onValueChange={setEstacaoId}>
+            <ResponsiveSelect value={estacaoId} onValueChange={setEstacaoId}>
               <SelectTrigger><SelectValue placeholder="Selecionar estação" /></SelectTrigger>
               <SelectContent>{estacoes.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}</SelectContent>
-            </Select>
+            </ResponsiveSelect>
           </div>
           <div><Label>Data Início</Label><Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
           <div><Label>Data Fim</Label><Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>

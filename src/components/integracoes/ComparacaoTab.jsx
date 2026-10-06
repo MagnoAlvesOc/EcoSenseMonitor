@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResponsiveSelect from "@/components/shared/ResponsiveSelect";
 import { Badge } from "@/components/ui/badge";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -117,14 +118,14 @@ export default function ComparacaoTab() {
             {estacoesCandidatas.length === 0 ? (
               <p className="text-sm text-muted-foreground">Importe dados externos primeiro na aba "Fontes Externas"</p>
             ) : (
-              <Select value={estacaoId} onValueChange={setEstacaoId}>
+              <ResponsiveSelect value={estacaoId} onValueChange={setEstacaoId}>
                 <SelectTrigger className="max-w-xs">
                   <SelectValue placeholder="Selecionar estação" />
                 </SelectTrigger>
                 <SelectContent>
                   {estacoesCandidatas.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}
                 </SelectContent>
-              </Select>
+              </ResponsiveSelect>
             )}
           </div>
           {estacaoId && (

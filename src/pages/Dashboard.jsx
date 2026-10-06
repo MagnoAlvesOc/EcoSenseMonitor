@@ -113,7 +113,7 @@ function TopBar({ isOnline, latest, isError, deepSleep }) {
   }
 
   return (
-    <div className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] pointer-events-auto">
+    <div className="fixed top-[calc(0.75rem_+_env(safe-area-inset-top))] md:top-3 left-1/2 -translate-x-1/2 z-[60] pointer-events-auto">
       <div className="flex items-center gap-2 bg-card/85 backdrop-blur-xl border border-border rounded-full px-3 py-1.5 shadow-lg dark:bg-card/50">
         <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
           isError ? "bg-red-500" : deepSleep ? "bg-amber-500 animate-pulse" : isOnline ? "bg-emerald-500 animate-pulse" : latest ? "bg-red-400" : "bg-slate-400"
@@ -224,7 +224,7 @@ function ChartDrawer({ data, externalData }) {
 
   if (!open) {
     return (
-      <div className="fixed bottom-[calc(10.5rem+env(safe-area-inset-bottom))] md:bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+      <div className="fixed bottom-[calc(10.5rem_+_env(safe-area-inset-bottom))] md:bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
         <button
           onClick={() => setOpen(true)}
           className="flex items-center gap-2 bg-card/85 backdrop-blur-xl border border-border rounded-full px-4 py-2 shadow-lg hover:bg-card transition-colors dark:bg-card/50"
@@ -285,7 +285,7 @@ function ChartDrawer({ data, externalData }) {
 // ── Toggle buttons (KPIs + Energia, juntos) ──────────────────────────────────
 function ToggleGroup({ kpiOpen, onKpiToggle, energyOpen, onEnergyToggle, sleeping }) {
   return (
-    <div className="fixed right-3 top-12 md:top-3 md:left-[182px] md:right-auto z-40 pointer-events-auto flex items-center gap-1.5">
+    <div className="fixed right-3 top-[calc(3rem_+_env(safe-area-inset-top))] md:top-3 md:left-[182px] md:right-auto z-40 pointer-events-auto flex items-center gap-1.5">
       <button
         onClick={onKpiToggle}
         className="flex items-center gap-1.5 bg-card/85 backdrop-blur-xl border border-border rounded-lg px-2.5 py-1.5 shadow-lg hover:bg-card transition-colors dark:bg-card/50"
