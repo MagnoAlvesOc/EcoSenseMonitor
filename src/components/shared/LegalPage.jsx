@@ -27,7 +27,7 @@ export default function LegalPage({ title, updatedAt = "05/10/2026", children })
         <h1 className="text-3xl font-bold mb-2">{title}</h1>
         <p className="text-xs text-muted-foreground mb-6">Versão dos documentos: {updatedAt}</p>
 
-        <div className="space-y-4 text-muted-foreground leading-relaxed">{children}</div>
+        <div className="space-y-4 text-muted-foreground leading-relaxed text-justify hyphens-auto">{children}</div>
       </div>
       <LegalFooter />
     </div>
