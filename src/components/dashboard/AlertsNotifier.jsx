@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { AlertTriangle, X, Flame, Droplets, Wind, Moon, Zap } from "lucide-react";
+import { AlertTriangle, Flame, Droplets, Wind, Moon, Zap } from "lucide-react";
 import moment from "moment";
+import DailyAlertsDigest from "./DailyAlertsDigest";
 
 function fmtDuracao(s) {
   const n = Number(s);
@@ -11,12 +12,6 @@ function fmtDuracao(s) {
   if (n < 3600) return `${Math.floor(n / 60)}min`;
   return `${(n / 3600).toFixed(1)}h`;
 }
-
-const SEVERITY_STYLE = {
-  critico: "bg-red-500/95 text-white border-red-600",
-  aviso:   "bg-amber-500/95 text-white border-amber-600",
-  info:    "bg-blue-500/95 text-white border-blue-600",
-};
 
 const TIPO_ICON = {
   temperatura_alta: Flame,
@@ -29,25 +24,6 @@ const TIPO_ICON = {
   deep_sleep: Moon,
   wake_up: Zap,
 };
-
-function AlertCard({ alerta, onDismiss }) {
-  const Icon = TIPO_ICON[alerta.tipo] || AlertTriangle;
-  const style = SEVERITY_STYLE[alerta.severidade] || SEVERITY_STYLE.aviso;
-
-  return (
-    <div className={`flex items-start gap-3 p-3 rounded-xl border shadow-lg ${style} animate-in slide-in-from-right-4 duration-300`}>
-      <Icon className="w-4 h-4 flex-shrink-0 mt-0.5" />
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-bold leading-tight">{alerta.estacao_nome || "Sistema"}</p>
-        <p className="text-xs opacity-90 leading-tight mt-0.5">{alerta.mensagem}</p>
-        <p className="text-[10px] opacity-70 mt-1">{moment(alerta.created_date).fromNow()}</p>
-      </div>
-      <button onClick={() => onDismiss(alerta.id)} className="opacity-80 hover:opacity-100 transition-opacity flex-shrink-0">
-        <X className="w-3.5 h-3.5" />
-      </button>
-    </div>
-  );
-}
 
 export default function AlertsNotifier() {
   const queryClient = useQueryClient();
@@ -73,14 +49,6 @@ export default function AlertsNotifier() {
   const { data: estacoes = [] } = useQuery({
     queryKey: ["estacoes-notifier"],
     queryFn: () => base44.entities.Estacoes.list(),
-  });
-
-  const dismissMutation = useMutation({
-    mutationFn: (id) => base44.entities.Alertas.update(id, { lido: true }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["alertas-notifier"] });
-      queryClient.invalidateQueries({ queryKey: ["alertas-unread"] });
-    },
   });
 
   const createAlertMutation = useMutation({
@@ -198,15 +166,20 @@ export default function AlertsNotifier() {
     });
   }, [leituras]);
 
-  const unread = alertas.filter(a => !a.lido).slice(0, 5); // máx. 5 não lidos
+  const unread = alertas.filter(a => !a.lido);
 
   if (!unread.length) return null;
 
+  // Um único cartão consolidado no lugar de uma notificação por alerta
+  const marcarTodos = async (ids) => {
+    await base44.entities.Alertas.bulkUpdate(ids.map((id) => ({ id, lido: true })));
+    queryClient.invalidateQueries({ queryKey: ["alertas-notifier"] });
+    queryClient.invalidateQueries({ queryKey: ["alertas-unread"] });
+  };
+
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto flex flex-col gap-2 w-[360px] max-w-[calc(100vw-1.5rem)]">
-      {unread.map(a => (
-        <AlertCard key={a.id} alerta={a} onDismiss={(id) => dismissMutation.mutate(id)} />
-      ))}
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto w-[360px] max-w-[calc(100vw-1.5rem)]">
+      <DailyAlertsDigest alertas={unread} onDismissAll={marcarTodos} />
     </div>
   );
 }
