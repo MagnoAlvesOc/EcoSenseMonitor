@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Map, BarChart3, Settings,
@@ -37,6 +37,10 @@ const desktopItems = [
   { path: "/contato",      icon: Mail,            label: "Contato" },
 ];
 
+// Última sub-rota visitada em cada árvore de navegação (ex.: /analises/estatistica).
+// Volta a ser aberta quando o usuário retorna à aba, em vez de resetar para a raiz.
+const lastSubRoute = {};
+
 export default function SideNav() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,11 +49,23 @@ export default function SideNav() {
   const isTabActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
-  // Clicar numa aba inferior já ativa volta para a rota-raiz daquela aba
+  // Memoriza a sub-rota mais recente visitada em cada árvore de navegação
+  useEffect(() => {
+    const tab = mainItems.find(
+      (i) => i.path !== "/" && location.pathname.startsWith(i.path + "/")
+    );
+    if (tab) lastSubRoute[tab.path] = location.pathname;
+  }, [location.pathname]);
+
+  // Ao trocar de aba, reabre a última sub-rota visitada daquela aba;
+  // clicar na aba já ativa reseta a pilha para a rota-raiz dela
   const handleTabReset = (path) => (e) => {
     if (isTabActive(path)) {
       e.preventDefault();
       navigate(path, { replace: location.pathname === path });
+    } else if (lastSubRoute[path] && lastSubRoute[path] !== path) {
+      e.preventDefault();
+      navigate(lastSubRoute[path]);
     }
   };
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));

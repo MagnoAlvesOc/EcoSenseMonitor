@@ -4,11 +4,12 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, MapPin, Wifi, WifiOff, Trash2, Download, Pencil, Crosshair } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import GeoLocateButton from "@/components/stations/GeoLocateButton";
 import { useStation } from "@/lib/StationContext";
+import useHashDialog from "@/lib/useHashDialog";
 import { useExternalIoT, getTs, ONLINE_THRESHOLD_S } from "@/lib/useExternalIoT";
 import moment from "moment";
 
@@ -24,8 +25,10 @@ export default function MapaEstacoes() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { clickedCoords, setClickedCoords } = useStation();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  // Diálogos sincronizados com o hash da URL (#dialog-add / #dialog-edit) —
+  // o botão voltar do Android fecha o overlay em vez de sair da página
+  const [addOpen, openAddDialog, closeAddDialog] = useHashDialog("dialog-add");
+  const [editOpen, openEditDialog, closeEditDialog] = useHashDialog("dialog-edit");
   const [editingStation, setEditingStation] = useState(null);
   const [form, setForm] = useState({ nome: "", descricao: "", latitude: "", longitude: "", ip_local: "" });
   const [editForm, setEditForm] = useState({ nome: "", descricao: "", latitude: "", longitude: "", ip_local: "" });
@@ -49,7 +52,7 @@ export default function MapaEstacoes() {
     mutationFn: (data) => base44.entities.Estacoes.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["estacoes"] });
-      setDialogOpen(false);
+      closeAddDialog();
       setForm({ nome: "", descricao: "", latitude: "", longitude: "", ip_local: "" });
       toast({ title: "Estação adicionada" });
     },
@@ -78,7 +81,7 @@ export default function MapaEstacoes() {
     onError: (_err, _vars, context) => queryClient.setQueryData(["estacoes"], context?.previous),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["estacoes"] });
-      setEditDialogOpen(false);
+      closeEditDialog();
       toast({ title: "Estação atualizada" });
     },
   });
@@ -86,7 +89,7 @@ export default function MapaEstacoes() {
   const openEdit = (est) => {
     setEditingStation(est);
     setEditForm({ nome: est.nome || "", descricao: est.descricao || "", latitude: est.latitude ?? "", longitude: est.longitude ?? "", ip_local: est.ip_local || "" });
-    setEditDialogOpen(true);
+    openEditDialog();
   };
 
   const getStationStatus = (estacao) => {
@@ -128,10 +131,8 @@ export default function MapaEstacoes() {
             <Button variant="outline" size="sm" onClick={handleExportCSV}>
               <Download className="w-4 h-4" />
             </Button>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Nova</Button>
-              </DialogTrigger>
+            <Button size="sm" onClick={openAddDialog}><Plus className="w-4 h-4 mr-1" /> Nova</Button>
+            <Dialog open={addOpen} onOpenChange={(o) => (o ? openAddDialog() : closeAddDialog())}>
               <DialogContent>
                 <DialogHeader><DialogTitle>Adicionar Estação</DialogTitle></DialogHeader>
                 <div className="space-y-4">
@@ -216,7 +217,7 @@ export default function MapaEstacoes() {
       </GlassCard>
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+      <Dialog open={editOpen} onOpenChange={(o) => (o ? openEditDialog() : closeEditDialog())}>
         <DialogContent>
           <DialogHeader><DialogTitle>Editar Estação</DialogTitle></DialogHeader>
           <div className="space-y-4">

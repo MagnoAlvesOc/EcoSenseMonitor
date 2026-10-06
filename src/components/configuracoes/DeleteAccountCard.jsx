@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -6,15 +6,22 @@ import { Input } from "@/components/ui/input";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogTitle, AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  AlertDialogTitle,
+  } from "@/components/ui/alert-dialog";
 import { UserX, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import useHashDialog from "@/lib/useHashDialog";
 
 export default function DeleteAccountCard() {
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  // Diálogo sincronizado com o hash da URL (#dialog-delete-account) —
+  // o botão voltar do Android fecha o overlay em vez de sair da página
+  const [open, openDialog, closeDialog] = useHashDialog("dialog-delete-account");
   const [confirmText, setConfirmText] = useState("");
+
+  useEffect(() => {
+    if (!open) setConfirmText("");
+  }, [open]);
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -39,12 +46,10 @@ export default function DeleteAccountCard() {
       <p className="text-sm text-muted-foreground mb-3">
         Remove permanentemente sua conta de usuário do aplicativo. Esta ação não pode ser desfeita.
       </p>
-      <AlertDialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setConfirmText(""); }}>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="sm">
-            <UserX className="w-4 h-4 mr-1" /> Excluir minha conta
-          </Button>
-        </AlertDialogTrigger>
+      <Button variant="destructive" size="sm" onClick={openDialog}>
+        <UserX className="w-4 h-4 mr-1" /> Excluir minha conta
+      </Button>
+      <AlertDialog open={open} onOpenChange={(o) => (o ? openDialog() : closeDialog())}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir sua conta permanentemente?</AlertDialogTitle>

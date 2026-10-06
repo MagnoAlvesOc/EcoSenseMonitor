@@ -43,11 +43,26 @@ export default function CustosTab() {
 
   const create = useMutation({
     mutationFn: (d) => base44.entities.CustoManutencao.create(d),
+    onMutate: async (d) => {
+      await qc.cancelQueries({ queryKey: ["custos"] });
+      const previous = qc.getQueryData(["custos"]);
+      // Atualização otimista: insere com id temporário (substituído ao revalidar)
+      qc.setQueryData(["custos"], (old) => [{ ...d, id: `temp-${Date.now()}` }, ...(old || [])]);
+      return { previous };
+    },
+    onError: (_err, _d, context) => qc.setQueryData(["custos"], context?.previous),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["custos"] }); setOpen(false); setForm(EMPTY); toast({ title: "Custo registrado" }); },
   });
 
   const remove = useMutation({
     mutationFn: (id) => base44.entities.CustoManutencao.delete(id),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["custos"] });
+      const previous = qc.getQueryData(["custos"]);
+      qc.setQueryData(["custos"], (old) => (old || []).filter(c => c.id !== id));
+      return { previous };
+    },
+    onError: (_err, _id, context) => qc.setQueryData(["custos"], context?.previous),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["custos"] }),
   });
 
