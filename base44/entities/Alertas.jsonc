@@ -11,7 +11,9 @@
         "umidade_baixa",
         "estacao_offline",
         "bateria_baixa",
-        "co2_alto"
+        "co2_alto",
+        "deep_sleep",
+        "wake_up"
       ],
       "description": "Tipo do alerta"
     },
