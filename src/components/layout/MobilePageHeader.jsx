@@ -27,7 +27,11 @@ export default function MobilePageHeader() {
   // Rotas-raiz das abas inferiores não mostram botão de voltar
   const isRootTab = ["/", "/mapa", "/analises"].includes(location.pathname);
 
-  const title = TITLES[location.pathname] ?? "EcoSense Monitor";
+  // Sub-rotas herdam o título da rota-pai (ex.: /analises/estatistica → Análises)
+  const parentRoute = Object.keys(TITLES).find(
+    (p) => location.pathname === p || location.pathname.startsWith(p + "/")
+  );
+  const title = TITLES[parentRoute] ?? "EcoSense Monitor";
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 md:hidden">
