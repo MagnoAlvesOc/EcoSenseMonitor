@@ -8,6 +8,9 @@ const LINKS = [
   { to: "/aviso-login-google", label: "Login com Google" },
   { to: "/aviso-transferencia-internacional", label: "Transferência Internacional" },
   { to: "/aviso-dados-ambientais", label: "Dados Ambientais" },
+  { to: "/plano-incidentes", label: "Plano de Incidentes" },
+  { to: "/ropa", label: "ROPA" },
+  { to: "/matriz-riscos", label: "Matriz de Riscos" },
   { to: "/contato", label: "Contato" },
 ];
 

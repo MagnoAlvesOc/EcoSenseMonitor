@@ -26,6 +26,9 @@ const Cookies = lazy(() => import('./pages/Cookies'));
 const AvisoLoginGoogle = lazy(() => import('./pages/AvisoLoginGoogle'));
 const AvisoTransferencia = lazy(() => import('./pages/AvisoTransferencia'));
 const AvisoDadosAmbientais = lazy(() => import('./pages/AvisoDadosAmbientais'));
+const PlanoIncidentes = lazy(() => import('./pages/PlanoIncidentes'));
+const ROPA = lazy(() => import('./pages/ROPA'));
+const MatrizRiscos = lazy(() => import('./pages/MatrizRiscos'));
 
 // Sub-abas em rotas aninhadas (/analises/relatorios, /manutencao/custos, ...)
 const Relatorios = lazy(() => import('./pages/Relatorios'));
@@ -55,7 +58,7 @@ const AdminOnly = ({ children }) => {
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
-  const isPublicPage = ["/sobre", "/contato", "/termos", "/privacidade", "/cookies", "/aviso-login-google", "/aviso-transferencia-internacional", "/aviso-dados-ambientais"].includes(window.location.pathname);
+  const isPublicPage = ["/sobre", "/contato", "/termos", "/privacidade", "/cookies", "/aviso-login-google", "/aviso-transferencia-internacional", "/aviso-dados-ambientais", "/plano-incidentes", "/ropa", "/matriz-riscos"].includes(window.location.pathname);
 
   if (isPublicPage) {
     return (
@@ -68,6 +71,9 @@ const AuthenticatedApp = () => {
         <Route path="/aviso-login-google" element={<AvisoLoginGoogle />} />
         <Route path="/aviso-transferencia-internacional" element={<AvisoTransferencia />} />
         <Route path="/aviso-dados-ambientais" element={<AvisoDadosAmbientais />} />
+        <Route path="/plano-incidentes" element={<PlanoIncidentes />} />
+        <Route path="/ropa" element={<ROPA />} />
+        <Route path="/matriz-riscos" element={<MatrizRiscos />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     );
@@ -128,6 +134,9 @@ const AuthenticatedApp = () => {
       <Route path="/aviso-login-google" element={<AvisoLoginGoogle />} />
       <Route path="/aviso-transferencia-internacional" element={<AvisoTransferencia />} />
       <Route path="/aviso-dados-ambientais" element={<AvisoDadosAmbientais />} />
+      <Route path="/plano-incidentes" element={<PlanoIncidentes />} />
+      <Route path="/ropa" element={<ROPA />} />
+      <Route path="/matriz-riscos" element={<MatrizRiscos />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
