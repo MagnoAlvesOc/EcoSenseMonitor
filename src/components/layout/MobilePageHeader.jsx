@@ -21,20 +21,26 @@ export default function MobilePageHeader() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // O Dashboard já possui sua própria barra de status superior
   if (location.pathname === "/") return null;
+
+  // Rotas-raiz das abas inferiores não mostram botão de voltar
+  const isRootTab = ["/", "/mapa", "/analises"].includes(location.pathname);
 
   const title = TITLES[location.pathname] ?? "EcoSense Monitor";
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 md:hidden">
-      <div className="flex items-center gap-1 px-2 pt-[calc(0.5rem_+_env(safe-area-inset-top))] pb-2 bg-background/90 backdrop-blur-xl border-b border-border/50">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 rounded-full hover:bg-muted transition-colors flex-shrink-0"
-          title="Voltar"
-        >
-          <ChevronLeft className="w-5 h-5 text-foreground" />
-        </button>
+      <div className={`flex items-center gap-1 px-2 pt-[calc(0.5rem_+_env(safe-area-inset-top))] pb-2 bg-background/90 backdrop-blur-xl border-b border-border/50 ${isRootTab ? "pl-4" : ""}`}>
+        {!isRootTab && (
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 rounded-full hover:bg-muted transition-colors flex-shrink-0"
+            title="Voltar"
+          >
+            <ChevronLeft className="w-5 h-5 text-foreground" />
+          </button>
+        )}
         <span className="text-sm font-bold text-foreground truncate">{title}</span>
       </div>
     </header>

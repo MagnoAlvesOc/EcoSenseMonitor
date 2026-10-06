@@ -2,22 +2,31 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { StationProvider } from '@/lib/StationContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
-import AppLayout from './components/layout/AppLayout';
-import Dashboard from './pages/Dashboard';
-import MapaEstacoes from './pages/MapaEstacoes';
-import Analises from './pages/Analises';
-import SystemLogsPage from './pages/SystemLogs';
-import Configuracoes from './pages/Configuracoes';
-import Manutencao from './pages/Manutencao';
-import Integracoes from './pages/Integracoes';
-import RelatorioPDF from './pages/RelatorioPDF';
-import Sobre from './pages/Sobre';
-import Contato from './pages/Contato';
+// Code-splitting: cada página é carregada sob demanda (first-load mais rápido em WebViews)
+const AppLayout = lazy(() => import('./components/layout/AppLayout'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const MapaEstacoes = lazy(() => import('./pages/MapaEstacoes'));
+const Analises = lazy(() => import('./pages/Analises'));
+const SystemLogsPage = lazy(() => import('./pages/SystemLogs'));
+const Configuracoes = lazy(() => import('./pages/Configuracoes'));
+const Manutencao = lazy(() => import('./pages/Manutencao'));
+const Integracoes = lazy(() => import('./pages/Integracoes'));
+const RelatorioPDF = lazy(() => import('./pages/RelatorioPDF'));
+const Sobre = lazy(() => import('./pages/Sobre'));
+const Contato = lazy(() => import('./pages/Contato'));
+
+// Fallback enquanto o chunk da página é carregado
+const PageLoader = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-background">
+    <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+  </div>
+);
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -79,7 +88,9 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <StationProvider>
           <Router>
-            <AuthenticatedApp />
+            <Suspense fallback={<PageLoader />}>
+              <AuthenticatedApp />
+            </Suspense>
           </Router>
           <Toaster />
         </StationProvider>
