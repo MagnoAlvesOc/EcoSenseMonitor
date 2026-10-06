@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { toggleTheme } from "@/lib/theme";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { useAuth } from "@/lib/AuthContext";
 
 const mainItems = [
   { path: "/",       icon: LayoutDashboard, label: "Dashboard" },
@@ -44,6 +45,12 @@ const lastSubRoute = {};
 export default function SideNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+
+  // Aba Configurações exclusiva de administradores
+  const mobileMoreItemsAdmin = mobileMoreItems.filter(i => isAdmin || i.path !== "/configuracoes");
+  const desktopItemsAdmin = desktopItems.filter(i => isAdmin || i.path !== "/configuracoes");
 
   // Ativa também nas sub-rotas (ex.: /analises/estatistica mantém a aba Análises acesa)
   const isTabActive = (path) =>
@@ -157,7 +164,7 @@ export default function SideNav() {
 
       {/* Desktop: coluna completa */}
       <nav className="hidden md:flex flex-1 flex-col gap-1 py-3 px-2 overflow-y-auto">
-        {desktopItems.map(item => {
+        {desktopItemsAdmin.map(item => {
           const isActive = isTabActive(item.path);
           return (
             <Link key={item.path} to={item.path} className="w-full">
@@ -198,7 +205,7 @@ export default function SideNav() {
           <div className="px-3 pb-[calc(1rem_+_env(safe-area-inset-bottom))]">
             <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-3 mb-2">Mais</p>
             <div className="space-y-0.5">
-              {mobileMoreItems.map(item => <MoreRow key={item.path} item={item} />)}
+              {mobileMoreItemsAdmin.map(item => <MoreRow key={item.path} item={item} />)}
             </div>
             <div className="mt-2 border-t border-border/60 pt-2">
               <button

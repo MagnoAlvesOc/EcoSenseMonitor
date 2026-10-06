@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -42,6 +42,13 @@ const PageLoader = () => (
     <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
   </div>
 );
+
+// Bloqueia o acesso direto a /configuracoes para quem não é admin
+const AdminOnly = ({ children }) => {
+  const { user } = useAuth();
+  if (user?.role !== "admin") return <Navigate to="/" replace />;
+  return children;
+};
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -89,7 +96,7 @@ const AuthenticatedApp = () => {
           <Route path="comparacao" element={<ComparacaoEstacoes />} />
         </Route>
         <Route path="/logs" element={<SystemLogsPage />} />
-        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="/configuracoes" element={<AdminOnly><Configuracoes /></AdminOnly>} />
         <Route path="/manutencao" element={<Manutencao />}>
           <Route index element={<CustosTab />} />
           <Route path="custos" element={<CustosTab />} />
