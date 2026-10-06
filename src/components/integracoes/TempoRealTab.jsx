@@ -58,7 +58,7 @@ async function fetchOpenMeteo(lat, lng) {
 
 // Busca OpenWeather (usa a API Key salva na aba Fontes Externas, se houver)
 async function fetchOpenWeather(lat, lng) {
-  const apiKey = localStorage.getItem("owm_api_key");
+  const apiKey = sessionStorage.getItem("owm_api_key");
   if (!apiKey) throw new Error("Configure a API Key do OpenWeather na aba Fontes Externas");
   const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric`);
   if (!res.ok) throw new Error(`OpenWeather: ${res.status} ${res.statusText}`);

@@ -30,7 +30,7 @@ export default function FontesExternasTab() {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [fonte, setFonte] = useState("openweather");
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem("owm_api_key") || "");
+  const [apiKey, setApiKey] = useState(() => sessionStorage.getItem("owm_api_key") || "");
   const [estacaoId, setEstacaoId] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -97,7 +97,9 @@ export default function FontesExternasTab() {
     const estacao = estacoes.find(e => e.id === estacaoId);
     if (!estacao) return;
 
-    localStorage.setItem("owm_api_key", apiKey);
+    // Sessão apenas: a chave não persiste no disco (security scan CWE-922)
+    sessionStorage.setItem("owm_api_key", apiKey);
+    localStorage.removeItem("owm_api_key"); // limpa chave legada em texto puro
     setLoading(true);
     try {
       let payload;
