@@ -1,10 +1,14 @@
-import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import FontesExternasTab from "../components/integracoes/FontesExternasTab";
-import ComparacaoTab from "../components/integracoes/ComparacaoTab";
-import ExportApiTab from "../components/integracoes/ExportApiTab";
-import TempoRealTab from "../components/integracoes/TempoRealTab";
+import React from "react";
+import { Outlet } from "react-router-dom";
+import RouteTabs from "@/components/shared/RouteTabs";
 import { Globe, BarChart3, Code2, Zap } from "lucide-react";
+
+const TABS = [
+  { value: "temporeal", label: "Tempo Real", icon: Zap },
+  { value: "fontes", label: "Fontes Externas", icon: Globe },
+  { value: "comparacao", label: "Comparação", icon: BarChart3 },
+  { value: "export", label: "API de Exportação", icon: Code2 },
+];
 
 export default function Integracoes() {
   return (
@@ -14,35 +18,15 @@ export default function Integracoes() {
         <p className="text-xs text-muted-foreground">Importe dados de fontes externas, compare com suas estações e exporte via API JSON</p>
       </div>
 
-      <Tabs defaultValue="temporeal">
-        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto touch-pan-x md:w-auto md:justify-center">
-          <TabsTrigger value="temporeal" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <Zap className="w-3.5 h-3.5" /> Tempo Real
-          </TabsTrigger>
-          <TabsTrigger value="fontes" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <Globe className="w-3.5 h-3.5" /> Fontes Externas
-          </TabsTrigger>
-          <TabsTrigger value="comparacao" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <BarChart3 className="w-3.5 h-3.5" /> Comparação
-          </TabsTrigger>
-          <TabsTrigger value="export" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <Code2 className="w-3.5 h-3.5" /> API de Exportação
-          </TabsTrigger>
-        </TabsList>
+      <RouteTabs
+        base="/integracoes"
+        tabs={TABS}
+        className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg md:w-auto md:justify-center"
+      />
 
-        <TabsContent value="temporeal" className="mt-4">
-          <TempoRealTab />
-        </TabsContent>
-        <TabsContent value="fontes" className="mt-4">
-          <FontesExternasTab />
-        </TabsContent>
-        <TabsContent value="comparacao" className="mt-4">
-          <ComparacaoTab />
-        </TabsContent>
-        <TabsContent value="export" className="mt-4">
-          <ExportApiTab />
-        </TabsContent>
-      </Tabs>
+      <div className="mt-4">
+        <Outlet />
+      </div>
     </div>
   );
 }

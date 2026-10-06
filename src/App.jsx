@@ -21,6 +21,18 @@ const RelatorioPDF = lazy(() => import('./pages/RelatorioPDF'));
 const Sobre = lazy(() => import('./pages/Sobre'));
 const Contato = lazy(() => import('./pages/Contato'));
 
+// Sub-abas em rotas aninhadas (/analises/relatorios, /manutencao/custos, ...)
+const Relatorios = lazy(() => import('./pages/Relatorios'));
+const AnaliseEstatistica = lazy(() => import('./pages/AnaliseEstatistica'));
+const ComparacaoEstacoes = lazy(() => import('./pages/ComparacaoEstacoes'));
+const CustosTab = lazy(() => import('./components/manutencao/CustosTab'));
+const ManutencaoTab = lazy(() => import('./components/manutencao/ManutencaoTab'));
+const ManutencaoRelatorioTab = lazy(() => import('./components/manutencao/RelatorioTab'));
+const TempoRealTab = lazy(() => import('./components/integracoes/TempoRealTab'));
+const FontesExternasTab = lazy(() => import('./components/integracoes/FontesExternasTab'));
+const IntegracoesComparacaoTab = lazy(() => import('./components/integracoes/ComparacaoTab'));
+const ExportApiTab = lazy(() => import('./components/integracoes/ExportApiTab'));
+
 // Fallback enquanto o chunk da página é carregado
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -64,11 +76,27 @@ const AuthenticatedApp = () => {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/mapa" element={<MapaEstacoes />} />
-        <Route path="/analises" element={<Analises />} />
+        <Route path="/analises" element={<Analises />}>
+          <Route index element={<Relatorios />} />
+          <Route path="relatorios" element={<Relatorios />} />
+          <Route path="estatistica" element={<AnaliseEstatistica />} />
+          <Route path="comparacao" element={<ComparacaoEstacoes />} />
+        </Route>
         <Route path="/logs" element={<SystemLogsPage />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
-        <Route path="/manutencao" element={<Manutencao />} />
-        <Route path="/integracoes" element={<Integracoes />} />
+        <Route path="/manutencao" element={<Manutencao />}>
+          <Route index element={<CustosTab />} />
+          <Route path="custos" element={<CustosTab />} />
+          <Route path="preventiva" element={<ManutencaoTab />} />
+          <Route path="relatorio" element={<ManutencaoRelatorioTab />} />
+        </Route>
+        <Route path="/integracoes" element={<Integracoes />}>
+          <Route index element={<TempoRealTab />} />
+          <Route path="temporeal" element={<TempoRealTab />} />
+          <Route path="fontes" element={<FontesExternasTab />} />
+          <Route path="comparacao" element={<IntegracoesComparacaoTab />} />
+          <Route path="export" element={<ExportApiTab />} />
+        </Route>
         <Route path="/relatorio-pdf" element={<RelatorioPDF />} />
         <Route path="/RelatorioPDF" element={<RelatorioPDF />} />
       </Route>

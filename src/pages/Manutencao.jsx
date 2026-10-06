@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CustosTab from "../components/manutencao/CustosTab";
-import ManutencaoTab from "../components/manutencao/ManutencaoTab";
-import RelatorioTab from "../components/manutencao/RelatorioTab";
+import React from "react";
+import { Outlet } from "react-router-dom";
+import RouteTabs from "@/components/shared/RouteTabs";
 import { DollarSign, Wrench, FileDown } from "lucide-react";
+
+const TABS = [
+  { value: "custos", label: "Custos", icon: DollarSign },
+  { value: "preventiva", label: "Manutenção Preventiva", icon: Wrench },
+  { value: "relatorio", label: "Relatório PDF", icon: FileDown },
+];
 
 export default function Manutencao() {
   return (
@@ -13,29 +17,15 @@ export default function Manutencao() {
         <p className="text-xs text-muted-foreground">Custos, histórico preventivo e relatórios PDF por estação</p>
       </div>
 
-      <Tabs defaultValue="custos">
-        <TabsList className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg w-full max-w-full justify-start overflow-x-auto touch-pan-x md:w-auto md:justify-center">
-          <TabsTrigger value="custos" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <DollarSign className="w-3.5 h-3.5" /> Custos
-          </TabsTrigger>
-          <TabsTrigger value="preventiva" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <Wrench className="w-3.5 h-3.5" /> Manutenção Preventiva
-          </TabsTrigger>
-          <TabsTrigger value="relatorio" className="flex items-center gap-1.5 whitespace-nowrap shrink-0">
-            <FileDown className="w-3.5 h-3.5" /> Relatório PDF
-          </TabsTrigger>
-        </TabsList>
+      <RouteTabs
+        base="/manutencao"
+        tabs={TABS}
+        className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-lg md:w-auto md:justify-center"
+      />
 
-        <TabsContent value="custos" className="mt-4">
-          <CustosTab />
-        </TabsContent>
-        <TabsContent value="preventiva" className="mt-4">
-          <ManutencaoTab />
-        </TabsContent>
-        <TabsContent value="relatorio" className="mt-4">
-          <RelatorioTab />
-        </TabsContent>
-      </Tabs>
+      <div className="mt-4">
+        <Outlet />
+      </div>
     </div>
   );
 }

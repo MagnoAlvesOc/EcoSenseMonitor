@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Map, BarChart3, Settings,
   Activity, Sun, Moon, Globe, Info, Mail, Menu, ChevronRight,
@@ -39,6 +39,19 @@ const desktopItems = [
 
 export default function SideNav() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Ativa também nas sub-rotas (ex.: /analises/estatistica mantém a aba Análises acesa)
+  const isTabActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(path + "/");
+
+  // Clicar numa aba inferior já ativa volta para a rota-raiz daquela aba
+  const handleTabReset = (path) => (e) => {
+    if (isTabActive(path)) {
+      e.preventDefault();
+      navigate(path, { replace: location.pathname === path });
+    }
+  };
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
   const [moreOpen, setMoreOpen] = useState(false);
 
@@ -97,9 +110,9 @@ export default function SideNav() {
       {/* Celular: 4 abas principais (Dashboard, Mapa, Análises, Mais) */}
       <nav className="md:hidden flex-1 flex items-center justify-around px-1">
         {mainItems.map(item => {
-          const isActive = location.pathname === item.path;
+          const isActive = isTabActive(item.path);
           return (
-            <Link key={item.path} to={item.path} className="flex-1">
+            <Link key={item.path} to={item.path} className="flex-1" onClick={handleTabReset(item.path)}>
               <div className={`flex items-center justify-center w-11 h-11 mx-auto rounded-xl transition-all duration-200 ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow"
@@ -129,7 +142,7 @@ export default function SideNav() {
       {/* Desktop: coluna completa */}
       <nav className="hidden md:flex flex-1 flex-col gap-1 py-3 px-2 overflow-y-auto">
         {desktopItems.map(item => {
-          const isActive = location.pathname === item.path;
+          const isActive = isTabActive(item.path);
           return (
             <Link key={item.path} to={item.path} className="w-full">
               <div className={`relative flex items-center justify-start gap-3 px-2 py-2.5 rounded-xl transition-all duration-200 cursor-pointer ${
