@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
 const TITLES = {
+  "/sobre": "Sobre",
+  "/contato": "Contato",
   "/mapa": "Mapa das Estações",
   "/analises": "Análises",
   "/logs": "Logs do Sistema",

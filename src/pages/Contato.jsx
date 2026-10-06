@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Send, ArrowLeft } from "lucide-react";
 import EcoSenseLogo from "@/components/shared/EcoSenseLogo";
+import MobilePageHeader from "@/components/layout/MobilePageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +26,8 @@ export default function Contato() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-xl px-4 py-10">
+      <MobilePageHeader />
+      <div className="mx-auto max-w-xl px-4 pt-[calc(4.5rem_+_env(safe-area-inset-top))] pb-10 md:pt-10">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="w-4 h-4" /> Voltar ao app
         </Link>
