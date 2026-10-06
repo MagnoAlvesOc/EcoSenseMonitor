@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import FloatingMapBg from "./FloatingMapBg";
 import PullToRefresh from "./PullToRefresh";
 import SideNav from "./SideNav";
+import MobilePageHeader from "./MobilePageHeader";
 import InstallAppBanner from "./InstallAppBanner";
 import AlertsNotifier from "../dashboard/AlertsNotifier";
 
@@ -17,6 +18,9 @@ export default function AppLayout() {
     <div className="relative w-full h-screen overflow-hidden">
       {/* Fullscreen map background — receives pointer events where nothing overlaps */}
       <FloatingMapBg />
+
+      {/* Cabeçalho de navegação mobile (título + voltar) */}
+      <MobilePageHeader />
 
       {/* Fixed sidebar */}
       <SideNav />
@@ -36,7 +40,11 @@ export default function AppLayout() {
           initial={{ opacity: 0, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
-          className="min-h-full p-3 pt-[calc(0.75rem_+_env(safe-area-inset-top))] pb-[calc(7rem_+_env(safe-area-inset-bottom))] md:p-5 md:pb-6 md:pl-[182px]"
+          className={`min-h-full p-3 ${
+            isDashboard
+              ? "pt-[calc(0.75rem_+_env(safe-area-inset-top))]"
+              : "pt-[calc(3.75rem_+_env(safe-area-inset-top))]"
+          } pb-[calc(7rem_+_env(safe-area-inset-bottom))] md:p-5 md:pb-6 md:pl-[182px]`}
         >
           <Outlet />
         </motion.div>
