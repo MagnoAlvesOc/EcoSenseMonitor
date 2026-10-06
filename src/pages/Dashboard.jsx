@@ -176,7 +176,7 @@ function Popup({ open, onClose, children, style, className = "" }) {
 function KpiPopup({ kpis, open, onClose }) {
   return (
     <Popup open={open} onClose={onClose}
-      className="absolute right-3 top-12 md:left-[182px] md:right-auto"
+      className="absolute right-3 top-[5.5rem] md:top-12 md:left-[182px] md:right-auto"
     >
       <div className="bg-card/95 backdrop-blur-2xl border border-border rounded-2xl shadow-2xl p-2.5 w-[168px] dark:bg-card/90">
         {/* Header */}
@@ -285,7 +285,7 @@ function ChartDrawer({ data, externalData }) {
 // ── Toggle buttons (KPIs + Energia, juntos) ──────────────────────────────────
 function ToggleGroup({ kpiOpen, onKpiToggle, energyOpen, onEnergyToggle, sleeping }) {
   return (
-    <div className="fixed right-3 top-3 md:left-[182px] md:right-auto z-40 pointer-events-auto flex items-center gap-1.5">
+    <div className="fixed right-3 top-12 md:top-3 md:left-[182px] md:right-auto z-40 pointer-events-auto flex items-center gap-1.5">
       <button
         onClick={onKpiToggle}
         className="flex items-center gap-1.5 bg-card/85 backdrop-blur-xl border border-border rounded-lg px-2.5 py-1.5 shadow-lg hover:bg-card transition-colors dark:bg-card/50"
