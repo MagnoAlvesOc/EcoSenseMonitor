@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import FloatingMapBg from "./FloatingMapBg";
@@ -46,7 +46,20 @@ export default function AppLayout() {
               : "pt-[calc(3.75rem_+_env(safe-area-inset-top))]"
           } pb-[calc(7rem_+_env(safe-area-inset-bottom))] md:p-5 md:pb-6 md:pl-[182px]`}
         >
-          <Outlet />
+          {/* Boundary própria para as páginas lazy: sem isso, um chunk de página
+              em carregamento suspende o boundary superior e o React esconde/reanexa
+              a árvore inteira (incluindo o mapa Leaflet já inicializado), causando
+              "Map container is already initialized". Aqui a suspensão fica contida
+              na área do conteúdo — o mapa de fundo nunca é remontado. */}
+          <Suspense
+            fallback={
+              <div className="h-[50vh] flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </motion.div>
       </div>
     </div>
