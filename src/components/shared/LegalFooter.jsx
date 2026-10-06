@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 
 const LINKS = [
   { to: "/termos", label: "Termos de Uso" },
-  { to: "/privacidade", label: "Política de Privacidade" },
-  { to: "/cookies", label: "Política de Cookies" },
+  { to: "/privacidade", label: "Privacidade" },
+  { to: "/cookies", label: "Cookies" },
+  { to: "/aviso-login-google", label: "Login com Google" },
+  { to: "/aviso-transferencia-internacional", label: "Transferência Internacional" },
+  { to: "/aviso-dados-ambientais", label: "Dados Ambientais" },
   { to: "/contato", label: "Contato" },
 ];
 
