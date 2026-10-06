@@ -103,7 +103,8 @@ function getRainChanceStatus(v) {
 // ── Top Status Bar ───────────────────────────────────────────────────────────
 function TopBar({ isOnline, latest, isError, deepSleep }) {
   const lastTs = latest ? moment(getTs(latest)).format("DD/MM HH:mm:ss") : null;
-  const secsSinceLast = latest ? Math.round((Date.now() - getTs(latest)) / 1000) : null;
+  // Clamp em 0: evita "há -Ns" se o relógio do dispositivo adiantar
+  const secsSinceLast = latest ? Math.max(0, Math.round((Date.now() - getTs(latest)) / 1000)) : null;
 
   let agoStr = "";
   if (secsSinceLast != null) {

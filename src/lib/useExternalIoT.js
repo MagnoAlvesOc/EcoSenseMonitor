@@ -31,11 +31,21 @@ export function fmt(v, decimals = 1) {
 // Returns timestamp in ms. Usa o timestamp MAIS RECENTE disponível entre os
 // campos da linha (servidor e dispositivo), para que um relógio atrasado no
 // ESP8266 não faça uma leitura fresca parecer antiga (e a estação ficar offline).
+// Timestamps chegam em UTC sem sufixo de fuso ("2026-10-06T14:44:44"): se forem
+// lidos como hora local, uma leitura fresca parece estar ~3h no futuro
+// (o que gerava "há -10820s"). Valores sem offset são interpretados como UTC.
+function parseTsValue(v) {
+  if (typeof v === "string" && !/(Z|[+-]\d{2}:?\d{2})$/.test(v.trim())) {
+    return moment.utc(v).valueOf();
+  }
+  return moment(v).valueOf();
+}
+
 export function getTs(row) {
   if (!row) return 0;
   const candidates = [row.data_servidor, row.timestamp_recebimento, row.timestamp]
     .filter(Boolean)
-    .map((v) => moment(v).valueOf())
+    .map(parseTsValue)
     .filter((v) => !isNaN(v));
   return candidates.length ? Math.max(...candidates) : 0;
 }
