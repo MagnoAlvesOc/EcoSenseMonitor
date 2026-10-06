@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Map, BarChart3, Settings,
-  Activity, Sun, Moon, Globe, Info, Mail, Menu, ChevronRight,
+  Activity, Sun, Moon, Globe, Info, Mail, Menu, ChevronRight, LogOut,
 } from "lucide-react";
 import EcoSenseLogo from "@/components/shared/EcoSenseLogo";
 import { useQuery } from "@tanstack/react-query";
@@ -86,6 +86,11 @@ export default function SideNav() {
 
   const handleToggleTheme = () => {
     setDarkMode(toggleTheme() === "dark");
+  };
+
+  const handleLogout = async () => {
+    setMoreOpen(false);
+    await base44.auth.logout();
   };
 
   const badge = alertas.length > 0;
@@ -195,7 +200,14 @@ export default function SideNav() {
       </nav>
 
       {/* Rodapé — apenas desktop */}
-      <div className="hidden md:block px-2 pb-3 border-t border-border/40 pt-2">
+      <div className="hidden md:block px-2 pb-3 border-t border-border/40 pt-2 space-y-1">
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-start gap-3 w-full px-2 py-2 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
+        >
+          <LogOut className="w-4 h-4 flex-shrink-0" />
+          <span className="text-sm font-medium">Sair</span>
+        </button>
         <p className="text-[9px] text-muted-foreground/60 text-center">EcoSense IoT</p>
       </div>
 
@@ -214,6 +226,13 @@ export default function SideNav() {
               >
                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 <span className="text-sm font-medium flex-1 text-left">{darkMode ? "Modo Claro" : "Modo Escuro"}</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 w-full px-3 py-3 min-h-[44px] rounded-xl text-destructive hover:bg-destructive/10 active:bg-destructive/10 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="text-sm font-medium flex-1 text-left">Sair</span>
               </button>
             </div>
           </div>
